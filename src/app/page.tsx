@@ -1,6 +1,3 @@
-import { Button } from "@/component";
-import Link from "next/link";
-
 export default function Home() {
   return (
     <main className="min-h-screen bg-neutral-200">
@@ -11,9 +8,6 @@ export default function Home() {
         <p className="mt-4 text-neutral-600">
           Fellows consistency tracker.
         </p>
-        <div>
-          
-        </div>
       </div>
     </main>
   );
