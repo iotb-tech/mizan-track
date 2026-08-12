@@ -6,6 +6,7 @@ import { CreateAuthInput, createAuthSchema } from "@/app/lib/validation/input";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/app/lib/supabase/client";
 
+
 export function LoginForm() {
     const router = useRouter();
   const supabase = createClient();
