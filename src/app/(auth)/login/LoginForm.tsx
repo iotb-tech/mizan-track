@@ -52,6 +52,7 @@ export function LoginForm() {
       <Field label="Email" htmlFor="email" error={errors.email?.message}>
         <Input
           id="email"
+          type="email"
           placeholder="you@example.com"
           autoComplete="email"
           {...register("email")}
@@ -62,7 +63,7 @@ export function LoginForm() {
         htmlFor="password"
         error={errors.password?.message}
       >
-        <Input id="password" placeholder="********" {...register("password")} />
+        <Input id="password" type="password" autoComplete="password" placeholder="********" {...register("password")} />
       </Field>
       {errors.root && (
         <p className="text-error" role="alert">
