@@ -16,7 +16,7 @@ export default function Dashboard() {
   }
 
   return (
-    <DashboardShell>
+    <>
       <div className="space-y-6">
         {/* Dashboard heading */}
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -275,6 +275,6 @@ export default function Dashboard() {
           Logout
         </button>
       </div>
-    </DashboardShell>
+    </>
   );
 }

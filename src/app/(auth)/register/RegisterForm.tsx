@@ -62,7 +62,7 @@ export function RegisterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-95 px-3 py-1 space-y-5">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-95 px-3 py-1 space-y-3">
       <Field
         label="Full Name"
         htmlFor="name"
@@ -114,7 +114,8 @@ export function RegisterForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-4 w-full rounded-lg px-4 py-3 font-medium disabled:cursor-not-allowed disabled:opacity-50 bg-primary-500"
+        className="mt-4 w-full text-neutral-50 text-base rounded-lg px-4 py-3 disabled:cursor-not-allowed disabled:opacity-50 font-extrabold bg-primary-500"
+
       >
         {isSubmitting ? "Creating account..." : "Create Account"}
       </button>
