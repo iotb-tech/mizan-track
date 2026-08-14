@@ -23,7 +23,7 @@ export default function Dashboard() {
         </h1>
         <p className="mt-4 text-neutral-600">Fellows consistency tracker.</p>
         <p>This is Dashboard</p>
-        <Button onClick={logOut}>Log out</Button>
+        <Button variant="error" onClick={logOut}>Log out</Button>
       </div>
     </main>
   );

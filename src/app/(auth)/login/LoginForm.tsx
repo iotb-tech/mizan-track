@@ -72,8 +72,8 @@ export function LoginForm() {
         </p>
       )}
 
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Loading..." : "Log in"}
+      <Button variant='auth' type="submit" disabled={isSubmitting} >
+        {isSubmitting ? "Loading..." : "Sign in"}
       </Button>
     </form>
   );
