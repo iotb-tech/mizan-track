@@ -1,4 +1,5 @@
-import { DashboardNav } from "@/component/nav-bar";
+
+import { DashboardShell } from "@/component";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -8,12 +9,11 @@ export default async function DashboardLayOut({children}: {children : React.Reac
 
     if(!user) redirect("/login");
 
-    console.log(user)
+    // console.log(user)
 
     return(
         <div>
-            <DashboardNav name={user.user_metadata['name'] ?? 'signed in'} />
-            <main>{children}</main>
+            <DashboardShell>{children}</DashboardShell>
         </div>
     )
 }

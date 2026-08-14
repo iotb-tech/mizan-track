@@ -127,3 +127,8 @@ export function Card({icon, title, content}: {icon:string; title: string; conten
     </div>
   )
 }
+
+
+export { default as DashboardShell } from "./dashboard/DashboardShell";
+export { default as DashboardHeader } from "./dashboard/DashboardHeader";
+export { default as DashboardSidebar } from "./dashboard/DashboardSidebar";
