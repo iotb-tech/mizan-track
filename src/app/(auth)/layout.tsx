@@ -14,7 +14,7 @@ export default function LayOut({ children }:{ children: React.ReactNode }){
             }
           >
             <div className="p-8 lg:p-16">
-              <Logo />
+              <Logo variant="primary" />
               <h1 className="text-3xl sm:text-5xl font-bold leading-tight tracking-tight my-10 text-neutral-50">
                 Start your consistency journey.
               </h1>

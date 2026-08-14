@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LogoM } from ".";
 
 
 type Linkprop = {
@@ -32,4 +33,22 @@ export function NavBar(){
         </div>
       </nav>
     );
+}
+
+export function DashboardNav({name}: {name:string}){
+
+  return (
+    <header className="flex items-center gap-4 px-6 borber-b border-b-neutral-900 py-2 h-[4rem]">
+      <Link href="/dashboard">
+        <div className="flex gap-4 items-center ">
+        <LogoM />
+          <p className="text-2xl mt-4 font-medium">Dashboard</p>
+        </div>
+      </Link>
+      <div className="flex-1" />
+      <span className="text-xs text-neutral-800">{name}</span>
+
+    </header>
+  );
+
 }
