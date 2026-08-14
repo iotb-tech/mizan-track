@@ -30,3 +30,8 @@ export function Button({...prop}){
 
     return <button className="bg-primary-500 px-3 py-1 text-center mb-5 text-xl w-full rounded-2xl " {...prop} />
 }
+
+
+export { default as DashboardShell } from "./dashboard/DashboardShell";
+export { default as DashboardHeader } from "./dashboard/DashboardHeader";
+export { default as DashboardSidebar } from "./dashboard/DashboardSidebar";
