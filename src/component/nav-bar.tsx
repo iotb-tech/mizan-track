@@ -11,9 +11,9 @@ type Linkprop = {
 };
 
 export const links: Linkprop[] = [
-  { name: "Home", href: "/welcome", id: crypto.randomUUID() },
-  { name: "Login", href: "/login", id: crypto.randomUUID() },
-  { name: "Register", href: "/register", id: crypto.randomUUID() },
+  { name: "Home", href: "/welcome", id: "home" },
+  { name: "Login", href: "/login", id: "login" },
+  { name: "Register", href: "/register", id: "register" },
 ];
 export function NavBar(){
     const pathname = usePathname();
