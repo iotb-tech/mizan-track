@@ -34,6 +34,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} font-sans antialiased`}
       >
         <QueryProvider>
+          
            {children}
         </QueryProvider>
       </body>
