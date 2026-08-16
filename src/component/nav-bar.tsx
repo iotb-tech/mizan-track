@@ -1,54 +1,70 @@
 "use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoM } from ".";
 
-
 type Linkprop = {
   name: string;
   href: string;
-  id: string;
 };
 
 export const links: Linkprop[] = [
-  { name: "Home", href: "/welcome", id: crypto.randomUUID() },
+  { name: "Home", href: "/", id: crypto.randomUUID() },
   { name: "Login", href: "/login", id: crypto.randomUUID() },
   { name: "Register", href: "/register", id: crypto.randomUUID() },
 ];
-export function NavBar(){
-    const pathname = usePathname();
-    return (
-      <nav>
-        <div>
-          <ul className="flex gap-10">
-            {links.map((link) => (
-              <li
-                key={link.id}
-                className={`font-semibold ${pathname === link.href ? "border-b-2" : ""} border-b-primary-500`}
-              >
-                <Link href={link.href}>{link.name}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </nav>
-    );
-}
 
-export function DashboardNav({name}: {name:string}){
+export function NavBar() {
+  const pathname = usePathname();
 
   return (
-    <header className="flex items-center gap-4 px-6 borber-b border-b-neutral-900 py-2 h-[4rem]">
-      <Link href="/dashboard">
-        <div className="flex gap-4 items-center ">
-        <LogoM />
-          <p className="text-2xl mt-4 font-medium">Dashboard</p>
+    <nav className="w-full border-b border-neutral-200 bg-white">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+        
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2">
+          <LogoM />
+          <span className="text-xl font-bold text-neutral-900">
+            Mizan Track
+          </span>
+        </Link>
+
+        {/* Navigation Links */}
+        <ul className="hidden items-center gap-8 md:flex">
+          {links.map((link) => (
+            <li key={link.name}>
+              <Link
+                href={link.href}
+                className={`text-sm font-medium transition-colors hover:text-primary-500 ${
+                  pathname === link.href
+                    ? "text-primary-500"
+                    : "text-neutral-700"
+                }`}
+              >
+                {link.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {/* Authentication Buttons */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="hidden rounded-lg px-4 py-2 text-sm font-semibold text-neutral-700 transition hover:text-primary-500 sm:block"
+          >
+            Login
+          </Link>
+
+          <Link
+            href="/register"
+            className="rounded-lg bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+          >
+            Get Started
+          </Link>
         </div>
-      </Link>
-      <div className="flex-1" />
-      <span className="text-xs text-neutral-800">{name}</span>
-
-    </header>
+      </div>
+    </nav>
   );
-
 }
