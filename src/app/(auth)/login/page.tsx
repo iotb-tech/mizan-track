@@ -21,7 +21,7 @@ export default function Page(){
         </p>
         <div className="mt-5 mb-7">
           <Link href="/" className="px-3 text-warning/90">
-            Forget password →
+            Forgot password →
           </Link>
         </div>
       </>
