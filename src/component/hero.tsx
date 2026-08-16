@@ -55,7 +55,7 @@ export function Hero() {
             <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
               <div>
                 <p className="text-sm font-bold text-neutral-900">
-                  Good morning, Saidat 👋
+                  Good morning, Fellow 👋
                 </p>
                 <p className="mt-1 text-xs text-neutral-500">
                   Here&apos;s your progress today
