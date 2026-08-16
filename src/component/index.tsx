@@ -52,11 +52,20 @@ export function Button({ variant, ...prop }:ButtonProps) {
 
   return (
     <button
-      className={`${variant === "primary" ? "bg-primary-500 mt-3" : variant === "error" ? "bg-error border-0 " : variant === 'auth'? "bg-primary-500 w-full" :"bg-neutral-50 text-primary-600 border my-auto border-primary-500"} px-3 py-2  text-center mb-5 text-lg rounded-2xl text-neutral-50 disabled:cursor-not-allowed disabled:opacity-15 font-bold`}
+      className={`${variant === "primary" ? "bg-primary-500 mt-3" : variant === "error" ? "bg-error border-0 " : variant === 'auth'? "bg-primary-500 w-full" :"bg-neutral-50 text-primary-600 border my-auto border-primary-500"} px-3 py-1  text-center mb-5 text-lg rounded-2xl text-neutral-50 disabled:cursor-not-allowed disabled:opacity-15 font-semibold`}
       {...prop}
     />
   );
 }
+
+export const Select = forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HTMLSelectElement>>(
+  function Select({children, ...prop},ref){
+    return (
+      <select ref={ref} {...prop}>{children}</select>
+    )
+  }
+)
+
 
 type LogoProp = {
   variant?: 'primary' | 'secondary' 

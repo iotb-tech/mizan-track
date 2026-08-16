@@ -44,9 +44,7 @@ export function LoginForm() {
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit, (errors) =>
-        console.log("Validation Errors:", errors),
-      )}
+      onSubmit={handleSubmit(onSubmit)}
       noValidate
       className="w-95 px-3 py-1 space-y-5"
     >

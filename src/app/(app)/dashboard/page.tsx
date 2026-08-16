@@ -1,13 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { createClient } from "@/app/lib/supabase/client";
-import  DashboardShell  from "@/component/dashboard/DashboardShell";
+import { Button, Field, Input, Select } from "@/component";
+import { ModalDialog } from "@/component/ModalDialog";
+import { Form } from "@/component/form";
 
 export default function Dashboard() {
   const router = useRouter();
   const supabase = createClient();
 
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const toggleOpen = () => setIsOpen(!isOpen)
   async function logOut() {
     await supabase.auth.signOut();
 
@@ -26,7 +31,8 @@ export default function Dashboard() {
             </h1>
 
             <p className="mt-1 text-sm text-gray-500">
-              Here&apos;s what&apos;s happening with your consistency and spending.
+              Here&apos;s what&apos;s happening with your consistency and
+              spending.
             </p>
           </div>
 
@@ -42,19 +48,13 @@ export default function Dashboard() {
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <p className="text-sm text-gray-500">Current Streak</p>
-            <h3 className="mt-2 text-2xl font-bold text-gray-900">
-              14 days
-            </h3>
-            <p className="mt-1 text-xs text-gray-500">
-              Keep it up!
-            </p>
+            <h3 className="mt-2 text-2xl font-bold text-gray-900">14 days</h3>
+            <p className="mt-1 text-xs text-gray-500">Keep it up!</p>
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <p className="text-sm text-gray-500">Habits Today</p>
-            <h3 className="mt-2 text-2xl font-bold text-gray-900">
-              3 / 4
-            </h3>
+            <h3 className="mt-2 text-2xl font-bold text-gray-900">3 / 4</h3>
 
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-100">
               <div className="h-full w-3/4 rounded-full bg-[#1976e8]" />
@@ -62,17 +62,11 @@ export default function Dashboard() {
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">
-              This Week&apos;s Spending
-            </p>
+            <p className="text-sm text-gray-500">This Week&apos;s Spending</p>
 
-            <h3 className="mt-2 text-2xl font-bold text-gray-900">
-              ₦8,700
-            </h3>
+            <h3 className="mt-2 text-2xl font-bold text-gray-900">₦8,700</h3>
 
-            <p className="mt-1 text-xs text-green-600">
-              ↓ 12% vs last week
-            </p>
+            <p className="mt-1 text-xs text-green-600">↓ 12% vs last week</p>
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -93,9 +87,7 @@ export default function Dashboard() {
           {/* Habit streaks */}
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900">
-                Habit Streaks
-              </h2>
+              <h2 className="font-semibold text-gray-900">Habit Streaks</h2>
 
               <button className="text-sm font-medium text-[#1976e8]">
                 View all
@@ -141,17 +133,24 @@ export default function Dashboard() {
               ))}
             </div>
 
-            <button className="mt-4 w-full rounded-lg border border-gray-200 py-2.5 text-sm font-medium text-[#1976e8] hover:bg-gray-50">
+            <button
+              className="mt-4 w-full rounded-lg border border-gray-200 py-2.5 text-sm font-medium text-[#1976e8] hover:bg-gray-50"
+              onClick={toggleOpen}
+            >
               + Add New Habit
             </button>
+            <ModalDialog isOpen={isOpen} setIsOpen={setIsOpen} dismiss={true}>
+              <div className="flex flex-col">
+                <h2>Add new habit</h2>
+                {/* <Form setIsOpen={setIsOpen} /> */}
+              </div>
+            </ModalDialog>
           </div>
 
           {/* Spending overview */}
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900">
-                Spending Overview
-              </h2>
+              <h2 className="font-semibold text-gray-900">Spending Overview</h2>
 
               <select className="rounded-md border border-gray-200 px-2 py-1 text-sm text-gray-600 outline-none">
                 <option>This Week</option>
@@ -193,9 +192,7 @@ export default function Dashboard() {
         <section className="grid gap-6 xl:grid-cols-2">
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900">
-                Recent Expenses
-              </h2>
+              <h2 className="font-semibold text-gray-900">Recent Expenses</h2>
 
               <button className="text-sm font-medium text-[#1976e8]">
                 View all
@@ -217,9 +214,7 @@ export default function Dashboard() {
                       {name}
                     </p>
 
-                    <p className="text-xs text-gray-400">
-                      {category}
-                    </p>
+                    <p className="text-xs text-gray-400">{category}</p>
                   </div>
 
                   <div className="text-right">
@@ -227,9 +222,7 @@ export default function Dashboard() {
                       {amount}
                     </p>
 
-                    <p className="text-xs text-gray-400">
-                      {date}
-                    </p>
+                    <p className="text-xs text-gray-400">{date}</p>
                   </div>
                 </div>
               ))}
@@ -243,16 +236,12 @@ export default function Dashboard() {
                 Expenses by Category
               </h2>
 
-              <span className="text-sm text-gray-500">
-                This Month
-              </span>
+              <span className="text-sm text-gray-500">This Month</span>
             </div>
 
             <div className="flex min-h-52 items-center justify-center">
               <div className="flex h-40 w-40 items-center justify-center rounded-full border-[24px] border-[#1976e8] border-r-blue-200 border-b-blue-300">
-                <span className="text-lg font-bold text-gray-700">
-                  ₦48k
-                </span>
+                <span className="text-lg font-bold text-gray-700">₦48k</span>
               </div>
             </div>
 

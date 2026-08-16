@@ -1,4 +1,5 @@
-import { email, z } from "zod";
+import { Frequency } from "@/types/database";
+import { z } from "zod";
 
 export const createAuthSchema = z.object({
   name: z
@@ -12,3 +13,16 @@ export const createAuthSchema = z.object({
 });
 
 export type CreateAuthInput = z.infer<typeof createAuthSchema>
+
+
+export const createHabitSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(3, "Name must be at least 3 character")
+    .max(120, "Name must be 120 character or fewer"),
+    category: z.string().trim().max(120, "Category must be  120 character or fewers").min(3, "Category must be at least 3 character").optional().or(z.literal('')), 
+    frequency: z.enum(Frequency)
+});
+
+export type CreateHabitInput = z.infer<typeof createHabitSchema>;

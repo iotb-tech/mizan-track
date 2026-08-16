@@ -1,10 +1,11 @@
-
-import { Card, Footer, Header } from "@/component";
+"use client";
+import { Card } from "@/component";
 import { Hero } from "@/component/hero";
 
 
 export default function HomePage(){
     
+
     return (
       <>
       <Hero />
@@ -31,6 +32,16 @@ export default function HomePage(){
 
 "
             />
+
+            <select name="name" id="name">
+              <option value="gg">ggg</option>
+              <option value="ggg">gdgg</option>
+              <option value="ghg">ggig</option>
+              <option value="ggt">gggk</option>
+              <option value="gdg">hggg</option>
+              <option value="ggm">gggg</option>
+              <option value="ggl">gbbgg</option>
+            </select>
           </div>
         </div>
       </>
