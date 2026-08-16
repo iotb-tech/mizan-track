@@ -5,7 +5,7 @@ import { useState } from "react";
 import { createClient } from "@/app/lib/supabase/client";
 import { Button, Field, Input, Select } from "@/component";
 import { ModalDialog } from "@/component/ModalDialog";
-import { Form } from "@/component/form";
+import { Form } from "@/component/HabitForm";
 
 export default function Dashboard() {
   const router = useRouter();

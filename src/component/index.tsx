@@ -39,7 +39,7 @@ export const Input = forwardRef<
   return (
     <input
       ref={ref}
-      className="w-full border focus:border-primary-500 outline-0 px-3 py-2 mt-3 border-neutral-400 rounded-lg mb-2 "
+      className="w-full border focus:border-primary-500 outline-0 px-3 py-2 mt-1 border-neutral-400 rounded-lg mb-2 "
       {...prop}
     />
   );
