@@ -240,7 +240,7 @@ export default function Dashboard() {
             </div>
 
             <div className="flex min-h-52 items-center justify-center">
-              <div className="flex h-40 w-40 items-center justify-center rounded-full border-[24px] border-[#1976e8] border-r-blue-200 border-b-blue-300">
+              <div className="flex h-40 w-40 items-center justify-center rounded-full border-24 border-[#1976e8] border-r-blue-200 border-b-blue-300">
                 <span className="text-lg font-bold text-gray-700">₦48k</span>
               </div>
             </div>
