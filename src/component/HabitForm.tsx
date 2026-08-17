@@ -26,7 +26,7 @@ export function Form({
     resolver: zodResolver(createHabitSchema),
     defaultValues: {
       name: "",
-      category: "",
+      category: null,
       frequency: "daily",
     },
   });
@@ -39,6 +39,7 @@ export function Form({
     try {
       await createHabit.mutateAsync(value);
       reset();
+      setIsOpen(false);
     } catch (error) {
       setError("root", {
         message:
@@ -46,9 +47,7 @@ export function Form({
       });
     }
   }
-  if(isSubmitting){
-    setIsOpen(false);
-  }
+    
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}

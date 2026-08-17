@@ -67,5 +67,5 @@ export function ModalDialog({
       dialog?.removeEventListener("keydown", closeOnEscape);
     };
   }, [setIsOpen, dismiss]);
-  return <dialog ref={dialogRef} className="m-auto p-6 backdrop-blur-3xl overflow-hidden  rounded-xl">{children}</dialog>;
+  return <dialog ref={dialogRef} className="w-95 m-auto p-6 backdrop-blur-3xl overflow-hidden  rounded-xl">{children}</dialog>;
 }

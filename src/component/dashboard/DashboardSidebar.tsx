@@ -1,7 +1,10 @@
 "use client";
 
+import { createClient } from "@/lib/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 type DashboardSidebarProps = {
   isOpen: boolean;
@@ -46,6 +49,16 @@ export default function DashboardSidebar({
   onClose,
 }: DashboardSidebarProps) {
   const pathname = usePathname();
+    const router = useRouter();
+    const supabase = createClient();
+    const queryClient = useQueryClient();
+
+    async function logOut() {
+      await supabase.auth.signOut();
+      queryClient.clear();
+      router.refresh();
+      router.push("/login");
+    }
 
   return (
     <>
@@ -113,7 +126,8 @@ export default function DashboardSidebar({
         <div className="border-t border-white/10 p-4">
           <button
             type="button"
-            className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-blue-50 transition hover:bg-white/10"
+            onClick={logOut}
+            className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium  text-warning transition hover:bg-white/10"
           >
             <span>↪</span>
             <span>Logout</span>
