@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -287,3 +287,14 @@ export const Frequency: Frequency_type[] = [
   "specific_days",
   "weekly_count",
 ] as const;
+
+export type HabitWithLogs = Habit & {
+  habits_log: HabitLogs[];
+};
+
+export type HabitWithStats = Habit & {
+  streak: number;
+  doneToday: boolean;
+  recentHistory: boolean[]; // last 7 days status (from 6 days ago to today)
+  habits_log?: HabitLogs[];
+};

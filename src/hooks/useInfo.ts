@@ -10,10 +10,10 @@ import { redirect } from "next/navigation";
 
         if (!user) redirect("/login");
 
-        const { id: user_id, email, user_metadata } = user;
-        const { name: userName } = user_metadata;
+        const { id: user_id, user_metadata, email } = user;
+        const userName = user_metadata?.name || email?.split("@")[0] || "User";
 
-        return { user_id, userName}
+        return { user_id, userName };
     }
 
    
