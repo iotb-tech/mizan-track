@@ -2,15 +2,11 @@
 import { Field, Input } from "@/component";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  CreateAuthInput,
-  createAuthSchema,
-} from "@/app/lib/validation/input";
+import { CreateAuthInput, createAuthSchema } from "@/lib/validation/input";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/app/lib/supabase/client";
-  
-/* By Ibnu Ridor */
+import { createClient } from "@/lib/supabase/client";
 
+/* By Ibnu Ridor */
 
 export function RegisterForm() {
   const supabase = createClient();
@@ -62,12 +58,12 @@ export function RegisterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-95 px-3 py-1 space-y-5">
-      <Field
-        label="Full Name"
-        htmlFor="name"
-        error={errors.name?.message}
-      >
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      className="w-95 px-3 py-1 space-y-3"
+    >
+      <Field label="Full Name" htmlFor="name" error={errors.name?.message}>
         <Input
           id="name"
           type="text"
@@ -77,11 +73,7 @@ export function RegisterForm() {
         />
       </Field>
 
-      <Field
-        label="Email"
-        htmlFor="email"
-        error={errors.email?.message}
-      >
+      <Field label="Email" htmlFor="email" error={errors.email?.message}>
         <Input
           id="email"
           type="email"
@@ -106,15 +98,13 @@ export function RegisterForm() {
       </Field>
 
       {errors.root?.message && (
-        <p className="mt-2 text-sm text-red-500">
-          {errors.root.message}
-        </p>
+        <p className="mt-2 text-sm text-red-500">{errors.root.message}</p>
       )}
 
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-4 w-full rounded-lg px-4 py-3 font-medium disabled:cursor-not-allowed disabled:opacity-50 bg-primary-500"
+        className="mt-4 w-full text-neutral-50 text-base rounded-lg px-4 py-3 disabled:cursor-not-allowed disabled:opacity-50 font-extrabold bg-primary-500"
       >
         {isSubmitting ? "Creating account..." : "Create Account"}
       </button>
