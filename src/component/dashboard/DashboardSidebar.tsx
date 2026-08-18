@@ -30,7 +30,7 @@ export default function DashboardSidebar({
     },
     {
       name: "Habits",
-      href: `/dashboard/habits`,
+      href: `/habits`,
       icon: "✓",
     },
     {
