@@ -1,6 +1,7 @@
 "use client";
 
 import { useData } from "@/lib/UserDataContext";
+import { usePathname } from "next/navigation";
 
 type DashboardHeaderProps = {
   onMenuClick: () => void;
@@ -10,6 +11,10 @@ export default function DashboardHeader({
   onMenuClick,
 }: DashboardHeaderProps) {
   const {userName} = useData();
+  const pathname = usePathname()
+
+ const title = pathname.includes("habits") ? "Habits" :
+ pathname.includes("expenses") ? "Expenses" : pathname.includes("reports") ? "Reports" : "Dashboard"
  
   return (
     <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm sm:px-6 lg:px-8">
@@ -26,7 +31,7 @@ export default function DashboardHeader({
         </button>
 
         <div>
-          <p className="text-xs font-medium text-gray-500">Dashboard</p>
+          <p className="text-xs font-medium text-gray-500">{title}</p>
 
           <h2 className="text-lg font-semibold text-gray-900">Mizan Track</h2>
         </div>

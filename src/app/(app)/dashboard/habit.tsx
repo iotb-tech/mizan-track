@@ -1,7 +1,6 @@
 "use client";
 import { Form } from "@/component/HabitForm";
 import { ModalDialog } from "@/component/ModalDialog";
-import { useData } from "@/lib/UserDataContext";
 import { ReactNode, useState } from "react";
 
 
@@ -9,7 +8,6 @@ import { ReactNode, useState } from "react";
 export  function Habit({children}:{children: ReactNode}){
       const [isOpen, setIsOpen] = useState<boolean>(false);
       const toggleOpen = () => setIsOpen(!isOpen);
-      const { user_id } = useData();
       
     return (
       <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm flex flex-col">

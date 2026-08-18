@@ -52,7 +52,7 @@ export function Button({ variant, ...prop }:ButtonProps) {
 
   return (
     <button
-      className={`${variant === "primary" ? "bg-primary-500 mt-3" : variant === "error" ? "bg-error border-0 " : variant === 'auth'? "bg-primary-500 w-full" :"bg-neutral-50 text-primary-600 border my-auto border-primary-500"} px-3 py-1  text-center mb-5 text-lg rounded-2xl text-neutral-50 disabled:cursor-not-allowed disabled:opacity-15 font-semibold`}
+      className={`${variant === "primary" ? "bg-primary-500 mt-3" : variant === "error" ? "bg-error/50 border-0 " : variant === 'auth'? "bg-primary-500 w-full" : variant=== "secondary" ? "bg-primary-300 border-0" :"bg-neutral-50 text-primary-600 border my-auto border-primary-500"} px-4 py-3 text-center mb-5 text-sm rounded-2xl text-neutral-50 cursor-pointer font-semibold disabled:cursor-not-allowed disabled:opacity-15`}
       {...prop}
     />
   );

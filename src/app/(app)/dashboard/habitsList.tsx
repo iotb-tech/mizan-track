@@ -22,10 +22,10 @@ export default  function HabitsList(){
             {habits.map((habit) => (
               <div
                 key={habit.id}
-                className="flexflex-col justify-center border-b border-gray-100 pb-4 last:border-0"
+                className="flex flex-col justify-center border-b border-gray-100 pb-4 last:border-0"
               >
-                <p className="text-lg font-medium text-neutral-800">{habit.name}</p>
-                <p className="text-sm">{habit.category}</p>
+                <p className="text-lg font-medium text-neutral-800 capitalize">{habit.name}</p>
+                <p className="text-sm capitalize">{habit.category}</p>
               </div>
             ))}
           </div>
