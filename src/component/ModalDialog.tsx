@@ -17,7 +17,7 @@ type ModalDialogProps = React.PropsWithChildren & {
 export function ModalDialog({
   children,
   isOpen,
-  dismiss,
+  dismiss = true,
   setIsOpen,
 }: ModalDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -37,35 +37,44 @@ export function ModalDialog({
 
   useEffect(() => {
     const dialog = dialogRef.current;
-    function handleClose(e: Event | KeyboardEvent) {
+    function handleClose() {
       setIsOpen(false);
     }
 
-    function lightDismiss(e: Event) {
+    function lightDismiss(e: MouseEvent) {
       const { target } = e;
       if (target instanceof Element && target.nodeName === "DIALOG") {
-        handleClose(e);
+        handleClose();
       }
     }
 
     function closeOnEscape(e: KeyboardEvent) {
       if (e.key === "Escape") {
-        handleClose(e);
+        handleClose();
       }
     }
 
     if (dismiss) {
-      dialog?.addEventListener("click", lightDismiss);
+      dialog?.addEventListener("click", lightDismiss as EventListener);
     }
 
     dialog?.addEventListener("keydown", closeOnEscape);
 
     return () => {
       if (dismiss) {
-        dialog?.removeEventListener("click", lightDismiss);
+        dialog?.removeEventListener("click", lightDismiss as EventListener);
       }
       dialog?.removeEventListener("keydown", closeOnEscape);
     };
   }, [setIsOpen, dismiss]);
-  return <dialog ref={dialogRef} className="w-95 m-auto p-6 backdrop-blur-3xl overflow-hidden  rounded-xl">{children}</dialog>;
+
+  return (
+    <dialog
+      ref={dialogRef}
+      className="m-auto w-[min(480px,92vw)] max-w-lg rounded-2xl bg-white p-6 shadow-2xl backdrop:bg-slate-900/50 backdrop:backdrop-blur-sm outline-none"
+    >
+      {children}
+    </dialog>
+  );
 }
+

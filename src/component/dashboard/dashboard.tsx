@@ -1,20 +1,18 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { ReactNode } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useData } from "@/lib/UserDataContext";
+import { useHabits } from "@/hooks/useHabits";
 
-export default function Dashboard({children}: {children:ReactNode}) {
-  const router = useRouter();
-  const supabase = createClient();
-  const queryClient = useQueryClient()
+export default function Dashboard({ children }: { children: ReactNode }) {
+  const { user_id, userName } = useData();
+  const { data: habits = [] } = useHabits(user_id);
 
-  async function logOut() {
-    await supabase.auth.signOut();
-    queryClient.clear();
-    router.refresh();
-    router.push("/login");
-  }
+  const maxStreak =
+    habits.length > 0 ? Math.max(...habits.map((h) => h.streak), 0) : 0;
+  const completedToday = habits.filter((h) => h.doneToday).length;
+  const totalHabits = habits.length;
+  const habitProgressPct =
+    totalHabits > 0 ? Math.round((completedToday / totalHabits) * 100) : 0;
 
   return (
     <>
@@ -23,7 +21,7 @@ export default function Dashboard({children}: {children:ReactNode}) {
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-              Welcome back
+              Welcome back{userName ? `, ${userName}` : ""} 👋
             </h1>
 
             <p className="mt-1 text-sm text-gray-500">
@@ -34,7 +32,7 @@ export default function Dashboard({children}: {children:ReactNode}) {
 
           <button
             type="button"
-            className="w-full rounded-lg bg-[#1976e8] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1267cf] sm:w-auto"
+            className="w-full rounded-lg bg-[#1976e8] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1267cf] sm:w-auto shadow-sm"
           >
             + Add Expense
           </button>
@@ -44,16 +42,23 @@ export default function Dashboard({children}: {children:ReactNode}) {
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <p className="text-sm text-gray-500">Current Streak</p>
-            <h3 className="mt-2 text-2xl font-bold text-gray-900">14 days</h3>
+            <h3 className="mt-2 text-2xl font-bold text-gray-900">
+              {maxStreak} <small className="text-sm font-normal text-gray-500">days</small>
+            </h3>
             <p className="mt-1 text-xs text-gray-500">Keep it up!</p>
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <p className="text-sm text-gray-500">Habits Today</p>
-            <h3 className="mt-2 text-2xl font-bold text-gray-900">3 / 4</h3>
+            <h3 className="mt-2 text-2xl font-bold text-gray-900">
+              {completedToday} <small className="text-sm font-normal text-gray-500">/ {totalHabits}</small>
+            </h3>
 
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-100">
-              <div className="h-full w-3/4 rounded-full bg-[#1976e8]" />
+              <div
+                className="h-full rounded-full bg-[#1976e8] transition-all duration-300"
+                style={{ width: `${habitProgressPct}%` }}
+              />
             </div>
           </div>
 
@@ -79,7 +84,7 @@ export default function Dashboard({children}: {children:ReactNode}) {
         </section>
         <section className="grid gap-6 xl:grid-cols-2">
           {/* Habit streaks */}
-         {children}
+          {children}
 
           {/* Spending overview */}
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -188,15 +193,6 @@ export default function Dashboard({children}: {children:ReactNode}) {
             </div>
           </div>
         </section>
-
-        {/* Temporary logout button */}
-        <button
-          type="button"
-          onClick={logOut}
-          className="rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white hover:bg-gray-800"
-        >
-          Logout
-        </button>
       </div>
     </>
   );
