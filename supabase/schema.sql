@@ -104,7 +104,7 @@ create policy "habits: update own"
   
 drop policy if exists "habits: delete own" on public.habits;
 create policy "habits: delete own"
-  on public.habits for select
+  on public.habits for delete
   using ((select auth.uid())= user_id);
 
 

@@ -1,13 +1,20 @@
 "use client";
-import { Days } from "@/types/data";
-import { Field, Input, Select, Button } from ".";
-import { useState } from "react";
+import { Field, Input, Select } from ".";
 import { useForm } from "react-hook-form";
 import { CreateHabitInput, createHabitSchema } from "@/lib/validation/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateHabit } from "@/hooks/useCreateHabit";
 import { useData } from "@/lib/UserDataContext";
 
+const defaultCategories = [
+  "Personal",
+  "Health",
+  "Learning",
+  "Spiritual",
+  "Productivity",
+  "Fitness",
+  "Other",
+];
 
 export function Form({
   setIsOpen,
@@ -15,7 +22,6 @@ export function Form({
   setIsOpen: (val: boolean) => void;
 }) {
   const { user_id } = useData();
-  const [select, setSelect] = useState<string>("");
   const {
     register,
     handleSubmit,
@@ -26,12 +32,10 @@ export function Form({
     resolver: zodResolver(createHabitSchema),
     defaultValues: {
       name: "",
-      category: null,
+      category: "Personal",
       frequency: "daily",
     },
   });
-
-  
 
   const createHabit = useCreateHabit(user_id);
 
@@ -47,90 +51,88 @@ export function Form({
       });
     }
   }
-    
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       noValidate
-      className="flex flex-col gap-3"
+      className="flex flex-col gap-4 mt-2"
     >
+      {errors.root && (
+        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+          {errors.root.message}
+        </div>
+      )}
+
       <Field
-        label="Habit Name"
+        label="Habit name"
         htmlFor="habit-name"
         error={errors.name?.message}
       >
         <Input
           type="text"
           id="habit-name"
-          placeholder="name of the habit"
+          placeholder="e.g. Read 20 pages, Daily Coding Practice"
           {...register("name")}
           aria-invalid={Boolean(errors.name)}
-          aria-describedby={errors.name ? 'Name-error' : undefined}
         />
       </Field>
-      <Field label="Category" htmlFor="category" error={errors.category?.message} >
-        <Input type="text" id="category" placeholder="category of the habit" {...register('category')}/>
-      </Field>
-      <Field label="Frequency" htmlFor="frequency" error={errors.frequency?.message}>
-        <div className="flex flex-col">
+
+      <Field
+        label="Category"
+        htmlFor="category"
+        error={errors.category?.message}
+      >
+        <div className="mt-1">
           <Select
-            id="frequency"
-            value={select}
-            {...register('frequency')}
-            onChange={(e) => setSelect(e.target.value)}
-            className="p-2.5 border-neutral-400 focus:border-primary-500 rounded-lg border mt-4 focus:border"
+            id="category"
+            {...register("category")}
+            className="w-full rounded-lg border border-neutral-400 p-2.5 outline-0 focus:border-primary-500 bg-white"
           >
-            <optgroup>
-              <option value="daily">Daily</option>
-              <option value="specific_days">Specific Day</option>
-              <option value="weekly_count">Weekly Count</option>
-            </optgroup>
+            {defaultCategories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
           </Select>
         </div>
       </Field>
 
-      {select === "specific_days" ? (
-        <Field label="" htmlFor="frequency">
-          <div className="flex flex-col">
-            <Select
-              id="specific_days"
-              name="specific_days"
-              value={""}
-              onChange={() => console.log("mm")}
-              className="p-2.5 border-neutral-400 focus:border-primary-500 rounded-lg border mt-4 focus:border"
-            >
-              <option>--Select Days--</option>
-              <optgroup>
-                {Days.map(([label, value]) => {
-                  return (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  );
-                })}
-              </optgroup>
-            </Select>
-          </div>
-        </Field>
-      ) : (
-        ""
-      )}
-      {select === "weekly_count" ? (
-        <Field label="Weekly Count" htmlFor="weekly_count">
-          <Input type="text" id="weekly_count" />
-        </Field>
-      ) : (
-        ""
-      )}
+      <Field
+        label="Frequency"
+        htmlFor="frequency"
+        error={errors.frequency?.message}
+      >
+        <div className="mt-1">
+          <Select
+            id="frequency"
+            {...register("frequency")}
+            className="w-full rounded-lg border border-neutral-400 p-2.5 outline-0 focus:border-primary-500 bg-white"
+          >
+            <option value="daily">Daily</option>
+            <option value="specific_days">Specific Days</option>
+            <option value="weekly_count">Weekly Target</option>
+          </Select>
+        </div>
+      </Field>
 
-      <div className="flex justify-end items-center gap-5 mt-4">
-        <Button variant="muted" onClick={() => setIsOpen(false)}>
+      <div className="flex justify-end items-center gap-3 mt-4 pt-2 border-t border-gray-100">
+        <button
+          type="button"
+          onClick={() => setIsOpen(false)}
+          className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 transition"
+        >
           Cancel
-        </Button>
-        <Button variant="primary" type="submit" disabled={isSubmitting}>
-          add habit
-        </Button>
+        </button>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="rounded-lg bg-[#1976e8] px-5 py-2 text-sm font-semibold text-white hover:bg-[#1267cf] disabled:opacity-50 transition"
+        >
+          {isSubmitting ? "Adding..." : "Add Habit"}
+        </button>
       </div>
     </form>
   );
 }
+
