@@ -21,7 +21,7 @@ export const createHabitSchema = z.object({
     .trim()
     .min(3, "Name must be at least 3 character")
     .max(120, "Name must be 120 character or fewer"),
-    category: z.string().trim().max(120, "Category must be  120 character or fewers").min(3, "Category must be at least 3 character").optional().or(z.literal('')), 
+    category: z.string().trim().max(120, "Category must be  120 character or fewers").min(3, "Category must be at least 3 character").optional().or(z.literal(null)), 
     frequency: z.enum(Frequency)
 });
 

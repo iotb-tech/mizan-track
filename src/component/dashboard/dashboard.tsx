@@ -1,21 +1,17 @@
 "use client";
-
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { createClient } from "@/app/lib/supabase/client";
-import { Button, Field, Input, Select } from "@/component";
-import { ModalDialog } from "@/component/ModalDialog";
-import { Form } from "@/component/form";
+import { createClient } from "@/lib/supabase/client";
+import { ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
-export default function Dashboard() {
+export default function Dashboard({children}: {children:ReactNode}) {
   const router = useRouter();
   const supabase = createClient();
+  const queryClient = useQueryClient()
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const toggleOpen = () => setIsOpen(!isOpen)
   async function logOut() {
     await supabase.auth.signOut();
-
+    queryClient.clear();
     router.refresh();
     router.push("/login");
   }
@@ -27,7 +23,7 @@ export default function Dashboard() {
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-              Welcome back 
+              Welcome back
             </h1>
 
             <p className="mt-1 text-sm text-gray-500">
@@ -81,71 +77,9 @@ export default function Dashboard() {
             </div>
           </div>
         </section>
-
-        {/* Main dashboard sections */}
         <section className="grid gap-6 xl:grid-cols-2">
           {/* Habit streaks */}
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900">Habit Streaks</h2>
-
-              <button className="text-sm font-medium text-[#1976e8]">
-                View all
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {[
-                ["Daily Coding Practice", "7 days"],
-                ["Reading", "3 days"],
-                ["Exercise", "5 days"],
-                ["Prayer / Dhikr", "14 days"],
-              ].map(([habit, streak]) => (
-                <div
-                  key={habit}
-                  className="flex items-center justify-between border-b border-gray-100 pb-4 last:border-0"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-[#1976e8]">
-                      ✓
-                    </div>
-
-                    <div>
-                      <p className="text-sm font-semibold text-gray-800">
-                        {habit}
-                      </p>
-
-                      <div className="mt-1 flex gap-1">
-                        {[1, 2, 3, 4, 5].map((dot) => (
-                          <span
-                            key={dot}
-                            className="h-1.5 w-1.5 rounded-full bg-[#1976e8]"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <span className="text-sm font-semibold text-gray-700">
-                    {streak}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <button
-              className="mt-4 w-full rounded-lg border border-gray-200 py-2.5 text-sm font-medium text-[#1976e8] hover:bg-gray-50"
-              onClick={toggleOpen}
-            >
-              + Add New Habit
-            </button>
-            <ModalDialog isOpen={isOpen} setIsOpen={setIsOpen} dismiss={true}>
-              <div className="flex flex-col">
-                <h2>Add new habit</h2>
-                {/* <Form setIsOpen={setIsOpen} /> */}
-              </div>
-            </ModalDialog>
-          </div>
+         {children}
 
           {/* Spending overview */}
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -240,7 +174,7 @@ export default function Dashboard() {
             </div>
 
             <div className="flex min-h-52 items-center justify-center">
-              <div className="flex h-40 w-40 items-center justify-center rounded-full border-24 border-[#1976e8] border-r-blue-200 border-b-blue-300">
+              <div className="flex h-40 w-40 items-center justify-center rounded-full border-[24px] border-[#1976e8] border-r-blue-200 border-b-blue-300">
                 <span className="text-lg font-bold text-gray-700">₦48k</span>
               </div>
             </div>
