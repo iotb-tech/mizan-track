@@ -1,14 +1,15 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { PropsWithChildren, ReactNode, useState } from "react";
 import DashboardHeader from "./DashboardHeader";
 import DashboardSidebar from "./DashboardSidebar";
 
-type DashboardShellProps = {
+type DashboardShellProps = PropsWithChildren &{
   children: ReactNode;
+
 };
 
-export default function DashboardShell({
+export default function DashboardShell({ 
   children,
 }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
