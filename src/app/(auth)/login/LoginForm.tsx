@@ -2,13 +2,12 @@
 import { Field, Input, Button } from "@/component";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateAuthInput, createAuthSchema } from "@/app/lib/validation/input";
+import { CreateAuthInput, createAuthSchema } from "@/lib/validation/input";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/app/lib/supabase/client";
-
+import { createClient } from "@/lib/supabase/client";
 
 export function LoginForm() {
-    const router = useRouter();
+  const router = useRouter();
   const supabase = createClient();
   const {
     register,
@@ -24,29 +23,24 @@ export function LoginForm() {
     },
   });
 
+  const onSubmit = async (data: CreateAuthInput) => {
+    const { email, password } = data;
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-
-  const onSubmit = async (data:CreateAuthInput) => {
-       const { email, password } = data;
-        const { error:authError } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        })
-
-        if(authError){
-            setError("root", {message: authError.message});
-            return
-        }
-    router.refresh()
-    router.push("/dashboard")
-    
+    if (authError) {
+      setError("root", { message: authError.message });
+      return;
+    }
+    router.refresh();
+    router.push("/dashboard");
   };
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit, (errors) =>
-        console.log("Validation Errors:", errors),
-      )}
+      onSubmit={handleSubmit(onSubmit)}
       noValidate
       className="w-95 px-3 py-1 space-y-5"
     >
@@ -64,7 +58,13 @@ export function LoginForm() {
         htmlFor="password"
         error={errors.password?.message}
       >
-        <Input id="password" type="password" autoComplete="password" placeholder="********" {...register("password")} />
+        <Input
+          id="password"
+          type="password"
+          autoComplete="password"
+          placeholder="********"
+          {...register("password")}
+        />
       </Field>
       {errors.root && (
         <p className="text-error" role="alert">
@@ -72,7 +72,7 @@ export function LoginForm() {
         </p>
       )}
 
-      <Button variant='auth' type="submit" disabled={isSubmitting} >
+      <Button variant="auth" type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Loading..." : "Sign in"}
       </Button>
     </form>
