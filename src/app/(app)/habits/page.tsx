@@ -144,14 +144,14 @@ export default function HabitsPage() {
                     <td className="px-6 py-4">
                       <button
                         type="button"
-                        disabled={toggleMutation.isPending}
+                        disabled={toggleMutation.isPending || habit.doneToday}
                         onClick={() =>
                           handleToggle(habit.id, habit.doneToday)
                         }
                         className={`rounded-lg px-4 py-2 text-xs font-semibold transition ${
                           habit.doneToday
                             ? "bg-[#1976e8] text-white shadow-sm hover:bg-[#1267cf]"
-                            : "border border-gray-300 bg-white text-[#1976e8] hover:bg-blue-50"
+                            : "border border-gray-300 disabled:cursor-not-allowed disabled:opacity-20 bg-white text-[#1976e8] hover:bg-blue-50"
                         }`}
                       >
                         {habit.doneToday ? "Completed ✓" : "Mark complete"}
