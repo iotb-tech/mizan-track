@@ -32,3 +32,28 @@ export const createHabitSchema = z.object({
 });
 
 export type CreateHabitInput = z.infer<typeof createHabitSchema>;
+
+export const createExpenseSchema = z.object({
+  amount: z.coerce
+    .number()
+    .positive("Amount must be greater than 0"),
+
+  category: z
+    .string()
+    .trim()
+    .min(1, "Category is required")
+    .max(120, "Category must be 120 characters or fewer"),
+
+  date: z
+    .string()
+    .min(1, "Date is required"),
+
+  note: z
+    .string()
+    .trim()
+    .max(500, "Note must be 500 characters or fewer")
+    .optional()
+    .or(z.literal("")),
+});
+
+export type CreateExpenseInput = z.infer<typeof createExpenseSchema>;
