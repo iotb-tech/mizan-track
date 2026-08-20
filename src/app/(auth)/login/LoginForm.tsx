@@ -42,7 +42,7 @@ export function LoginForm() {
     <form
       onSubmit={handleSubmit(onSubmit)}
       noValidate
-      className="w-95 px-3 py-1 space-y-5"
+      className="w-95 max-md:w-85 px-3 py-1 space-y-5"
     >
       <Field label="Email" htmlFor="email" error={errors.email?.message}>
         <Input
