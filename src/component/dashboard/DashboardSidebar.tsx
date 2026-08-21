@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
@@ -78,22 +79,15 @@ export default function DashboardSidebar({
         }`}
       >
         {/* Logo */}
-        <div className="flex h-20 items-center border-b border-white/10 px-6">
-          <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-lg font-bold text-[#0f4788]">
-            M
-          </div>
-
-          <div>
-            <h1 className="text-base font-bold tracking-wide">
-              MIZAN TRACK
-            </h1>
-
-            <p className="text-[9px] uppercase tracking-[0.18em] text-blue-100">
-              Consistency • Expenses • Progress
-            </p>
-          </div>
-        </div>
-
+       <div className="flex h-20 items-center border-b border-white/10 px-6">
+     <Image
+    src="/images/mizan-logo-full.png"
+    alt="Mizan Track"
+    width={180}
+    height={60}
+    className="object-contain"
+  />
+    </div>
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6">
           <div className="space-y-2">
