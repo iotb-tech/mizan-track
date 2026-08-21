@@ -44,13 +44,13 @@ export default function Dashboard({ children }: { children: ReactNode }) {
             </p>
           </div>
 
-          <button
+          {/* <button
             type="button"
             onClick={() => setIsModalOpen(!isModalOpen)}
             className="w-full rounded-lg bg-[#1976e8] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1267cf] sm:w-auto shadow-sm"
           >
             + Add Expense
-          </button>
+          </button> */}
         </div>
 
         {/* Statistics */}
