@@ -11,7 +11,7 @@ export default function page() {
         <p className="text-sm text-neutral-600">It takes less than a minute.</p>
       </div>
       <RegisterForm />
-      <p className="mb-6 px-6 mt-3">
+      <p className="mb-6 px-6 mt-3max-md:text-base">
         Already have an account ,{" "}
         <Link href="/login" className="text-primary-500">
           Log in

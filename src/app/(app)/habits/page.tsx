@@ -119,10 +119,7 @@ export default function HabitsPage() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {habits.map((habit) => (
-                  <tr
-                    key={habit.id}
-                    className="transition hover:bg-gray-50/60"
-                  >
+                  <tr key={habit.id} className="transition hover:bg-gray-50/60">
                     <td className="px-6 py-4">
                       <span className="font-semibold text-gray-900">
                         {habit.name}
@@ -144,14 +141,12 @@ export default function HabitsPage() {
                     <td className="px-6 py-4">
                       <button
                         type="button"
-                        disabled={toggleMutation.isPending}
-                        onClick={() =>
-                          handleToggle(habit.id, habit.doneToday)
-                        }
+                        disabled={toggleMutation.isPending || habit.doneToday}
+                        onClick={() => handleToggle(habit.id, habit.doneToday)}
                         className={`rounded-lg px-4 py-2 text-xs font-semibold transition ${
                           habit.doneToday
-                            ? "bg-[#1976e8] text-white shadow-sm hover:bg-[#1267cf]"
-                            : "border border-gray-300 bg-white text-[#1976e8] hover:bg-blue-50"
+                            ? "bg-[#1976e8] text-white shadow-sm hover:bg-[#1267cf] disabled:cursor-not-allowed disabled:opacity-50"
+                            : "border border-gray-300  bg-white text-[#1976e8] hover:bg-blue-50"
                         }`}
                       >
                         {habit.doneToday ? "Completed ✓" : "Mark complete"}

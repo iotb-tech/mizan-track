@@ -38,13 +38,13 @@ export default function DashboardHeader({
         </button>
 
         <div>
-          <h2 className="text-lg font-bold text-gray-900">{currentTitle}</h2>
+          <h2 className="text-lg max-md:text-base font-bold text-gray-900">{currentTitle}</h2>
         </div>
       </div>
 
       {/* Right side */}
       <div className="flex items-center gap-3">
-        <span className="text-sm font-semibold text-gray-800">
+        <span className="text-sm max-md:text-xs font-semibold text-gray-800">
           {userName}
         </span>
 
