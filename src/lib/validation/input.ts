@@ -57,3 +57,19 @@ export const createExpenseSchema = z.object({
 });
 
 export type CreateExpenseInput = z.infer<typeof createExpenseSchema>;
+
+
+export const forgotSchema = z.object({
+  email: z.email({ pattern: z.regexes.html5Email })
+})
+
+export const updatePasswordSchema = z.object({
+  password: z.string().min(8, "Password must be least 8 character"),
+  confirmPassword: z.string().min(8, "Password must be least 8 character")
+}).refine((data)=> data.password === data.confirmPassword,{
+  message: "Password doesn't match",
+  path:["confirmPassword"]
+})
+
+export type CreateForgotSchema = z.infer<typeof forgotSchema>;
+export type CreateUpdatePass = z.infer<typeof updatePasswordSchema>;
