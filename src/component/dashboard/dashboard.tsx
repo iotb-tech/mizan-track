@@ -117,9 +117,13 @@ export default function Dashboard({ children }: { children: ReactNode }) {
               </Select>
             </div>
             <BarChart islastWeek={islastWeek} />
-            <div className="mt-5 rounded-lg bg-blue-50 px-4 py-3 text-sm text-gray-600">
-              You spent <strong>₦{total}</strong> this week.
-            </div>
+            {expenses.length === 0 ? (
+              ""
+            ) : (
+              <div className="mt-5 rounded-lg bg-blue-50 px-4 py-3 text-sm text-gray-600">
+                You spent <strong>₦{total}</strong> this week.
+              </div>
+            )}
           </div>
         </section>
 
@@ -151,11 +155,7 @@ export default function Dashboard({ children }: { children: ReactNode }) {
                 </div>
               ) : expenses.length === 0 ? (
                 <div className="p-12 text-center">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-2xl text-[#1976e8]">
-                    ₦
-                  </div>
-
-                  <h3 className="mt-4 text-lg font-semibold text-gray-900">
+                  <h3 className="mt-4 text-lg font-semibold text-gray-500">
                     No expenses recorded yet
                   </h3>
 
@@ -173,43 +173,47 @@ export default function Dashboard({ children }: { children: ReactNode }) {
                 </div>
               ) : (
                 <div>
-                  {expenses.map((expense) =>{ 
-                    
-                    const dayAgo = Math.floor((new Date().getTime() - new Date(expense.date).getTime()) / 86400000);
-                    console.log(dayAgo)
+                  {expenses.map((expense) => {
+                    const dayAgo = Math.floor(
+                      (new Date().getTime() -
+                        new Date(expense.date).getTime()) /
+                        86400000,
+                    );
+                    console.log(dayAgo);
                     let date = "";
-                  
-                    if(dayAgo === 0){
-                      date = "Today"
-                    }else if(dayAgo === 1){
-                      date = "Yesterday"
+
+                    if (dayAgo === 0) {
+                      date = "Today";
+                    } else if (dayAgo === 1) {
+                      date = "Yesterday";
                     } else {
                       date = new Date(expense.date).toLocaleDateString();
                     }
                     return (
-                    <div
-                      key={expense.id}
-                      className="flex items-center justify-between border-b border-gray-100 pb-4 last:border-0"
-                    >
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">
-                          {expense.category}
-                        </p>
+                      <div
+                        key={expense.id}
+                        className="flex items-center justify-between border-b border-gray-100 pb-4 last:border-0"
+                      >
+                        <div>
+                          <p className="text-sm font-semibold text-gray-800">
+                            {expense.category}
+                          </p>
 
-                        <p className="text-xs text-gray-400">{expense.note}</p>
+                          <p className="text-xs text-gray-400">
+                            {expense.note}
+                          </p>
+                        </div>
+
+                        <div className="text-right">
+                          <p className="text-sm font-semibold text-gray-800">
+                            ₦{expense.amount}
+                          </p>
+
+                          <p className="text-xs text-gray-400">{date}</p>
+                        </div>
                       </div>
-
-                      <div className="text-right">
-                        <p className="text-sm font-semibold text-gray-800">
-                          ₦{expense.amount}
-                        </p>
-
-                        <p className="text-xs text-gray-400">
-                          {date}
-                        </p>
-                      </div>
-                    </div>
-                  )})}
+                    );
+                  })}
                 </div>
               )}
             </div>

@@ -119,11 +119,9 @@ export function Chartdata({setaverageExpense, setTotal}:{setaverageExpense?: (e:
         </div>
       ) : expenses.length === 0 ? (
         <div className="p-12 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-2xl text-[#1976e8]">
-            ✓
-          </div>
-          <h3 className="mt-4 text-lg font-semibold text-gray-900">
-            No Expenses created yet
+        
+          <h3 className="mt-4 text-lg font-semibold text-gray-500">
+            No Expenses recorded yet
           </h3>
         
           
@@ -229,11 +227,9 @@ export function BarChart({ islastWeek }: { islastWeek: string }) {
         </div>
       ) : expenses.length === 0 ? (
         <div className="p-12 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-2xl text-[#1976e8]">
-            ✓
-          </div>
-          <h3 className="mt-4 text-lg font-semibold text-gray-900">
-            No Expenses created yet
+          
+          <h3 className="mt-4 text-lg font-semibold text-gray-500">
+            No Expenses recorded yet
           </h3>
         
           
