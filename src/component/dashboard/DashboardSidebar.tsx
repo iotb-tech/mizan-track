@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
-
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,55 +12,54 @@ type DashboardSidebarProps = {
   onClose: () => void;
 };
 
+const navItems = [
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: "⌂",
+  },
+  {
+    name: "Habits",
+    href: "/habits",
+    icon: "✓",
+  },
+  {
+    name: "Expenses",
+    href: "/expenses",
+    icon: "₦",
+  },
+  {
+    name: "Reports",
+    href: "/reports",
+    icon: "▤",
+  },
+  {
+    name: "Profile",
+    href: "/profile",
+    icon: "♙",
+  },
+  {
+    name: "Settings",
+    href: "/settings",
+    icon: "⚙",
+  },
+];
+
 export default function DashboardSidebar({
   isOpen,
   onClose,
 }: DashboardSidebarProps) {
-
   const pathname = usePathname();
-  const router = useRouter();
-  const supabase = createClient();
-  const queryClient = useQueryClient();
+    const router = useRouter();
+    const supabase = createClient();
+    const queryClient = useQueryClient();
 
-  const navItems = [
-    {
-      name: "Dashboard",
-      href: "/dashboard",
-      icon: "⌂",
-    },
-    {
-      name: "Habits",
-      href: `/habits`,
-      icon: "✓",
-    },
-    {
-      name: "Expenses",
-      href: "/expenses",
-      icon: "₦",
-    },
-    {
-      name: "Reports",
-      href: "/reports",
-      icon: "▤",
-    },
-    {
-      name: "Profile",
-      href: "/profile",
-      icon: "♙",
-    },
-    {
-      name: "Settings",
-      href: "/settings",
-      icon: "⚙",
-    },
-  ];
-
-  async function logOut() {
-    await supabase.auth.signOut();
-    queryClient.clear();
-    router.refresh();
-    router.push("/login");
-  }
+    async function logOut() {
+      await supabase.auth.signOut();
+      queryClient.clear();
+      router.refresh();
+      router.push("/login");
+    }
 
   return (
     <>
@@ -81,7 +79,6 @@ export default function DashboardSidebar({
         }`}
       >
         {/* Logo */}
-
        <div className="flex h-20 items-center border-b border-white/10 px-6">
      <Image
     src="/images/mizan-logo-full.png"
