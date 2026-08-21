@@ -13,13 +13,13 @@ export default function Page(){
           </p>
         </div>
         <LoginForm />
-        <p className="text-left px-3">
+        <p className="max-md:text-base text-left px-3">
           Do not have an account,{" "}
           <Link href="/register" className="text-primary-500">
             Create an account
           </Link>
         </p>
-        <div className="mt-5 mb-7">
+        <div className="max-md:text-base mt-5 mb-7">
           <Link href="/" className="px-3 text-warning/90">
             Forgot password →
           </Link>
