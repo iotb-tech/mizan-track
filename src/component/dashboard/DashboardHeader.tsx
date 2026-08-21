@@ -2,6 +2,7 @@
 
 import { useData } from "@/lib/UserDataContext";
 import { usePathname } from "next/navigation";
+import ThemeToggle from "@/component/ThemeToggle";
 
 type DashboardHeaderProps = {
   onMenuClick: () => void;
@@ -43,15 +44,17 @@ export default function DashboardHeader({
       </div>
 
       {/* Right side */}
-      <div className="flex items-center gap-3">
-        <span className="text-sm max-md:text-xs font-semibold text-gray-800">
-          {userName}
-        </span>
+     <div className="flex items-center gap-3">
+  <span className="text-sm max-md:text-xs font-semibold text-gray-800">
+    {userName}
+  </span>
 
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-bold text-[#0f4788]">
-          {(userName || "U").charAt(0).toUpperCase()}
-        </div>
-      </div>
+  <ThemeToggle />
+
+  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-bold text-[#0f4788]">
+    {(userName || "U").charAt(0).toUpperCase()}
+  </div>
+</div>
     </header>
   );
 }
