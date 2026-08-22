@@ -88,8 +88,8 @@ export function Logo({ variant }: LogoProp) {
     <Image
       src="/images/mizan-logo-full.png"
       alt="Mizan Track"
-      width={300}
-      height={100}
+      width={400}
+      height={200}
       className="object-contain"
     />
   );
