@@ -20,19 +20,13 @@ export default function RegisterPage() {
       </div>
 
       <RegisterForm />
-
-      <div className="mt-6 border-t border-neutral-100 pt-5 text-center">
-        <p className="text-sm text-neutral-600">
-          Already have an account?{" "}
-          <Link
-            href="/login"
-            className="font-semibold text-primary-600 hover:text-primary-700 hover:underline transition"
-          >
-            Sign In
-          </Link>
-        </p>
-      </div>
-    </div>
+      <p className="mb-6 px-6 mt-3max-md:text-base">
+        Already have an account ,{" "}
+        <Link href="/login" className="text-primary-500">
+          Log in
+        </Link>
+      </p>
+    </>
   );
 }
 

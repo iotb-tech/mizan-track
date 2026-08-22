@@ -58,21 +58,13 @@ export function RegisterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-      {errors.root && (
-        <div className="rounded-xl bg-red-50 border border-red-200/80 p-3.5 text-xs text-red-700">
-          {errors.root.message}
-        </div>
-      )}
-
-      <div>
-        <label
-          htmlFor="name"
-          className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1.5"
-        >
-          Full Name
-        </label>
-        <input
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      className="w-95 max-md:w-85 px-3 py-1 space-y-3"
+    >
+      <Field label="Full Name" htmlFor="name" error={errors.name?.message}>
+        <Input
           id="name"
           type="text"
           placeholder="e.g. Alex Johnson"

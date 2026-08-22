@@ -42,4 +42,4 @@ export function Habit({ children }: { children: ReactNode }) {
       </ModalDialog>
     </div>
   );
-}
+}

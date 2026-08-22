@@ -279,6 +279,7 @@ export const Constants = {
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type Habit = Database["public"]["Tables"]["habits"]["Row"];
 export type HabitLogs = Database["public"]["Tables"]["habits_log"]["Row"];
+export type Expense = Database["public"]["Tables"]["expenses"]["Row"];
 
 export type Frequency_type = Database["public"]["Enums"]["frequency_type"];
 

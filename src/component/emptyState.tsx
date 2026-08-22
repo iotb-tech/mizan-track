@@ -1,6 +1,6 @@
 export function EmptyState({title, message}: {title:string; message: string}){
     return(
-        <div className="w-full h-auto flex  flex-col  items-center justify-center">
+        <div className="text-neutral-200 font-semibold w-full h-auto flex  flex-col  items-center justify-center">
             <h3 className="text-3xl">
                 {title}
             </h3>

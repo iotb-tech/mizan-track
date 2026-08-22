@@ -81,13 +81,38 @@ export function LoginForm() {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-        {errors.root && (
-          <div className="rounded-xl bg-red-50 border border-red-200/80 p-3.5 text-xs text-red-700">
-            {errors.root.message}
-          </div>
-        )}
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      className="w-95 max-md:w-85 px-3 py-1 space-y-5"
+    >
+      <Field label="Email" htmlFor="email" error={errors.email?.message}>
+        <Input
+          id="email"
+          type="email"
+          placeholder="you@example.com"
+          autoComplete="email"
+          {...register("email")}
+        />
+      </Field>
+      <Field
+        label="Password"
+        htmlFor="password"
+        error={errors.password?.message}
+      >
+        <Input
+          id="password"
+          type="password"
+          autoComplete="password"
+          placeholder="********"
+          {...register("password")}
+        />
+      </Field>
+      {errors.root && (
+        <p className="text-error" role="alert">
+          {errors.root.message}
+        </p>
+      )}
 
         <div>
           <label
