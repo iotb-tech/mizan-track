@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import Dashboard from "@/component/dashboard/dashboard";
 
 type UserProfile = {
   name: string;
@@ -50,21 +49,21 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <main className="min-h-screen bg-[#f5f8fc] px-4 py-6 sm:px-6 lg:px-8">
+      <main className="min-h-screen bg-[#f5f8fc] dark:bg-[#0b1220] px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           {/* Page Header */}
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-slate-900">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
               Profile
             </h1>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-slate-500 dark:text-gray-400 ">
               View and manage your account information.
             </p>
           </div>
 
           {/* Profile Card */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white dark:border-gray-700 dark:bg-gray-900 p-6 shadow-sm">
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <p className="text-sm text-slate-500">
@@ -75,7 +74,7 @@ export default function ProfilePage() {
               <>
                 {/* Profile Header */}
                 <div className="flex flex-col gap-5 border-b border-slate-100 pb-6 sm:flex-row sm:items-center">
-                  {/* Avatar */}
+                  {/* Avatar */} 
                   <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-[#1976e8] text-2xl font-bold text-white">
                     {profile.name.charAt(0).toUpperCase()}
                   </div>

@@ -36,10 +36,10 @@ export function ExpenseForm({
     setError,
     formState: { errors, isSubmitting },
   } = useForm<
-  z.input<typeof createExpenseSchema>,
-  unknown,
-  CreateExpenseInput
->({
+    z.input<typeof createExpenseSchema>,
+    unknown,
+    CreateExpenseInput
+  >({
     resolver: zodResolver(createExpenseSchema),
     defaultValues: {
       amount: undefined,
@@ -70,10 +70,10 @@ export function ExpenseForm({
     <form
       onSubmit={handleSubmit(onSubmit)}
       noValidate
-      className="flex flex-col gap-4 mt-2"
+      className="mt-2 flex flex-col gap-4"
     >
       {errors.root && (
-        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-950/40 dark:text-red-400">
           {errors.root.message}
         </div>
       )}
@@ -84,14 +84,14 @@ export function ExpenseForm({
         error={errors.amount?.message}
       >
         <Input
-         type="number"
-        id="expense-amount"
-         placeholder="e.g. 5000"
+          type="number"
+          id="expense-amount"
+          placeholder="e.g. 5000"
           min="0"
           step="0.01"
           {...register("amount", { valueAsNumber: true })}
           aria-invalid={Boolean(errors.amount)}
-/>
+        />
       </Field>
 
       <Field
@@ -102,7 +102,7 @@ export function ExpenseForm({
         <select
           id="expense-category"
           {...register("category")}
-          className="mt-1 w-full rounded-lg border border-neutral-400 bg-white p-2.5 outline-0 focus:border-primary-500"
+          className="mt-1 w-full rounded-lg border border-neutral-400 bg-white p-2.5 text-gray-900 outline-0 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
         >
           {expenseCategories.map((category) => (
             <option key={category} value={category}>
@@ -136,15 +136,15 @@ export function ExpenseForm({
           rows={3}
           {...register("note")}
           aria-invalid={Boolean(errors.note)}
-          className="mt-1 w-full rounded-lg border border-neutral-400 p-2.5 outline-0 focus:border-primary-500"
+          className="mt-1 w-full rounded-lg border border-neutral-400 bg-white p-2.5 text-gray-900 outline-0 placeholder:text-gray-400 focus:border-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400"
         />
       </Field>
 
-      <div className="flex justify-end items-center gap-3 mt-4 pt-2 border-t border-gray-100">
+      <div className="mt-4 flex items-center justify-end gap-3 border-t border-gray-100 pt-2 dark:border-gray-700">
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 transition"
+          className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           Cancel
         </button>
@@ -152,7 +152,7 @@ export function ExpenseForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-lg bg-[#1976e8] px-5 py-2 text-sm font-semibold text-white hover:bg-[#1267cf] disabled:opacity-50 transition"
+          className="rounded-lg bg-[#1976e8] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#1267cf] disabled:opacity-50"
         >
           {isSubmitting ? "Adding..." : "Add Expense"}
         </button>

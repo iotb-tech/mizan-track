@@ -4,18 +4,17 @@ import { PropsWithChildren, ReactNode, useState } from "react";
 import DashboardHeader from "./DashboardHeader";
 import DashboardSidebar from "./DashboardSidebar";
 
-type DashboardShellProps = PropsWithChildren &{
+type DashboardShellProps = PropsWithChildren & {
   children: ReactNode;
-
 };
 
-export default function DashboardShell({ 
+export default function DashboardShell({
   children,
 }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#f5f8fc]">
+    <div className="min-h-screen bg-[#f5f8fc] transition-colors dark:bg-[#0b1220]">
       <DashboardSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}

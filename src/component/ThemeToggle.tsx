@@ -15,22 +15,18 @@ export default function ThemeToggle() {
   }, []);
 
   function toggleTheme() {
-    if (darkMode) {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-      setDarkMode(false);
-    } else {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-      setDarkMode(true);
-    }
+    const nextTheme = darkMode ? "light" : "dark";
+
+    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+    localStorage.setItem("theme", nextTheme);
+    setDarkMode(nextTheme === "dark");
   }
 
   return (
     <button
       type="button"
       onClick={toggleTheme}
-      className="rounded-lg border border-neutral-200 px-3 py-2 text-sm"
+      className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-base transition hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
       aria-label="Toggle dark mode"
     >
       {darkMode ? "☀️" : "🌙"}

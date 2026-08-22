@@ -1,4 +1,5 @@
 "use client";
+
 import { Doughnut, Bar } from "react-chartjs-2";
 import {
   Chart,
@@ -8,7 +9,6 @@ import {
   Title,
   CategoryScale,
   LinearScale,
-  LineElement,
   BarElement,
 } from "chart.js";
 import { useExpenses } from "@/hooks/useExpenses";
@@ -23,73 +23,103 @@ Chart.register(
   Title,
   BarElement,
   CategoryScale,
-  LineElement,
   LinearScale,
 );
 
-export const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-export const date: Date = new Date();
-export const targetMonth = date.getMonth() + 1;
-export const targetYear = date.getFullYear();
+export const weekdays = [
+  "Sun",
+  "Mon",
+  "Tue",
+  "Wed",
+  "Thu",
+  "Fri",
+  "Sat",
+];
 
-export const generateColor = (value: number): string[] => {
+export function generateColor(value: number): string[] {
+  if (value === 0) return [];
+
   return Array.from({ length: value }, (_, i) => {
     const hue = ((i * 360) / value) % 360;
     return `hsl(${hue}, 70%, 60%)`;
   });
-};
-
-export function filterData(arr: Expense[]) {
-  const filtered = arr.filter((item: Expense) => {
-    const month = new Date(item.date).getMonth() + 1 === targetMonth;
-    const year = new Date(item.date).getFullYear() === targetYear;
-    return month && year;
-  });
-  return filtered;
 }
 
-export function Chartdata({setaverageExpense, setTotal}:{setaverageExpense?: (e:number)=> void; setTotal?: (e:number)=>void }) {
+function getMonthExpenses(expenses: Expense[]) {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  return expenses.filter((expense) => {
+    const expenseDate = new Date(expense.date);
+
+    return (
+      expenseDate.getMonth() === currentMonth &&
+      expenseDate.getFullYear() === currentYear
+    );
+  });
+}
+
+export function Chartdata({
+  setAverageExpense,
+  setTotal,
+}: {
+  setAverageExpense?: (value: number) => void;
+  setTotal?: (value: number) => void;
+}) {
   const { user_id } = useData();
-  const { data: expenses = [], isLoading, error } = useExpenses(user_id);
-  const filteredexpense = filterData(expenses);
-  const grouped: Record<string, number> = {};
-  for (const expense of filteredexpense) {
-    if (Object.hasOwn(grouped, expense.category)) {
-      const currentValue = grouped[expense.category]!;
-      grouped[expense.category] = currentValue + expense.amount;
-    } else {
-      grouped[expense.category] = expense.amount;
+
+  const {
+    data: expenses = [],
+    isLoading,
+    error,
+  } = useExpenses(user_id);
+
+  const filteredExpenses = getMonthExpenses(expenses);
+
+  const grouped = useMemo(() => {
+    const result: Record<string, number> = {};
+
+    for (const expense of filteredExpenses) {
+      result[expense.category] =
+        (result[expense.category] ?? 0) + expense.amount;
     }
-  }
 
-  const dynamicColor = generateColor(expenses.length);
+    return result;
+  }, [filteredExpenses]);
 
-  const label = Object.keys(grouped);
-  const value = Object.values(grouped);
-    const total = Math.round(value.reduce(((current, total)=> total + current),0));
-    const average = total/value.length
-    useEffect(()=> { 
-        if(setaverageExpense){
-            setaverageExpense(average)}
-        },[average,setaverageExpense])
-    useEffect(()=> { 
-        if(setTotal){
-            setTotal(total)}
-        },[total,setTotal])
+  const labels = Object.keys(grouped);
+  const values = Object.values(grouped);
 
-  const data = useMemo(() => {
-    return {
-      labels: label,
+  const total = useMemo(
+    () => values.reduce((sum, value) => sum + value, 0),
+    [values],
+  );
+
+  const average = useMemo(
+    () => (values.length > 0 ? total / values.length : 0),
+    [total, values.length],
+  );
+
+  useEffect(() => {
+    setAverageExpense?.(average);
+    setTotal?.(total);
+  }, [average, total, setAverageExpense, setTotal]);
+
+  const data = useMemo(
+    () => ({
+      labels,
       datasets: [
         {
-          label: "expenses",
-          data: value,
-          backgroundColor: dynamicColor,
+          label: "Expenses",
+          data: values,
+          backgroundColor: generateColor(labels.length),
           borderWidth: 1,
         },
       ],
-    };
-  }, [value, dynamicColor, label]);
+    }),
+    [labels, values],
+  );
 
   const options = {
     responsive: true,
@@ -99,144 +129,161 @@ export function Chartdata({setaverageExpense, setTotal}:{setaverageExpense?: (e:
       },
       title: {
         display: true,
-        text: "Expenses Of This Month",
+        text: "Expenses by Category",
       },
     },
   } as const;
 
-  return (
-    <div>
-      {isLoading ? (
-        <div>
-          <div className="p-12 text-center text-gray-500">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1976e8] border-r-transparent align-[-0.125em]" />
-            <p className="mt-3 text-sm">Loading...</p>
-          </div>
-        </div>
-      ) : error ? (
-        <div className="p-12 text-center text-red-500">
-          <p className="text-sm">Failed to load . Please try again.</p>
-        </div>
-      ) : expenses.length === 0 ? (
-        <div className="p-12 text-center">
-        
-          <h3 className="mt-4 text-lg font-semibold text-gray-500">
-            No Expenses recorded yet
-          </h3>
-        
-          
-        </div>
-      ) : (
-        <Doughnut data={data} options={options} />
-      )}
-    </div>
-  );
+  if (isLoading) {
+    return (
+      <div className="p-12 text-center text-gray-500">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1976e8] border-r-transparent align-[-0.125em]" />
+        <p className="mt-3 text-sm">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-12 text-center text-red-500">
+        <p className="text-sm">
+          Failed to load expenses. Please try again.
+        </p>
+      </div>
+    );
+  }
+
+  if (filteredExpenses.length === 0) {
+    return (
+      <div className="p-12 text-center">
+        <h3 className="text-lg font-semibold text-gray-500">
+          No expenses recorded this month
+        </h3>
+      </div>
+    );
+  }
+
+  return <Doughnut data={data} options={options} />;
 }
 
-
-
-
-export function BarChart({ islastWeek }: { islastWeek: string }) {
+export function BarChart({
+  isLastWeek,
+}: {
+  isLastWeek: string;
+}) {
   const { user_id } = useData();
-  const { data: expenses = [], isLoading, error } = useExpenses(user_id);
-  const filteredexpense = filterData(expenses);
-  const dynamicColor = generateColor(expenses.length);
 
-  const isThisWeekexp = [];
-  const isLastWeekexp = [];
-  for (const expense of filteredexpense) {
-    const withDay = {
-      ...expense,
-      day: new Date(expense.date).toLocaleDateString("en-US", {
-        weekday: "short",
-      }),
-    };
-    const dayAgo = Math.floor(
-      (date.getTime() - new Date(expense.date).getTime()) / 86400000,
+  const {
+    data: expenses = [],
+    isLoading,
+    error,
+  } = useExpenses(user_id);
+
+  const weekData = useMemo(() => {
+    const now = new Date();
+
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
     );
-    if (dayAgo <= 6) {
-      isThisWeekexp.push(withDay);
-    } else if (dayAgo >= 7 && dayAgo <= 13) {
-      isLastWeekexp.push(withDay);
+
+    const selectedExpenses = expenses.filter((expense) => {
+      const expenseDate = new Date(expense.date);
+
+      const expenseDay = new Date(
+        expenseDate.getFullYear(),
+        expenseDate.getMonth(),
+        expenseDate.getDate(),
+      );
+
+      const difference =
+        Math.floor(
+          (startOfToday.getTime() - expenseDay.getTime()) / 86400000,
+        );
+
+      if (isLastWeek === "this_week") {
+        return difference >= 0 && difference <= 6;
+      }
+
+      return difference >= 7 && difference <= 13;
+    });
+
+    const grouped: Record<string, number> = {};
+
+    for (const expense of selectedExpenses) {
+      const day = new Date(expense.date).toLocaleDateString("en-US", {
+        weekday: "short",
+      });
+
+      grouped[day] = (grouped[day] ?? 0) + expense.amount;
     }
+
+    return weekdays.map((day) => grouped[day] ?? 0);
+  }, [expenses, isLastWeek]);
+
+  const data = useMemo(
+    () => ({
+      labels: weekdays,
+      datasets: [
+        {
+          label:
+            isLastWeek === "this_week"
+              ? "This week"
+              : "Last week",
+          data: weekData,
+          backgroundColor: generateColor(weekdays.length),
+          borderWidth: 1,
+        },
+      ],
+    }),
+    [weekData, isLastWeek],
+  );
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      title: {
+        display: true,
+        text:
+          isLastWeek === "this_week"
+            ? "Spending This Week"
+            : "Spending Last Week",
+      },
+    },
+  } as const;
+
+  if (isLoading) {
+    return (
+      <div className="p-12 text-center text-gray-500">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1976e8] border-r-transparent align-[-0.125em]" />
+        <p className="mt-3 text-sm">Loading...</p>
+      </div>
+    );
   }
 
-  const groupedthisWeek: Record<string, number> = {};
-  for (const expense of isThisWeekexp) {
-    if (Object.hasOwn(groupedthisWeek, expense.day)) {
-      const currentValue = groupedthisWeek[expense.day]!;
-      groupedthisWeek[expense.day] = currentValue + expense.amount;
-    } else {
-      groupedthisWeek[expense.day] = expense.amount;
-    }
-  }
-  const groupedLastWeek: Record<string, number> = {};
-  for (const expense of isLastWeekexp) {
-    if (Object.hasOwn(groupedLastWeek, expense.day)) {
-      const currentValue = groupedLastWeek[expense.day]!;
-      groupedLastWeek[expense.day] = currentValue + expense.amount;
-    } else {
-      groupedLastWeek[expense.day] = expense.amount;
-    }
-  }
-  let weekdata: number[] = useMemo(()=>[],[])
-  if (islastWeek === "last_week") {
-    weekdata = weekdays.map((day) => groupedLastWeek[day] ?? 0);
-  } if (islastWeek === "this_week") {
-    weekdata = weekdays.map((day) => groupedthisWeek[day] ?? 0);
+  if (error) {
+    return (
+      <div className="p-12 text-center text-red-500">
+        <p className="text-sm">
+          Failed to load expenses. Please try again.
+        </p>
+      </div>
+    );
   }
 
-   const data = useMemo(() => {
-     return {
-       labels: weekdays,
-       datasets: [
-         {
-           label: "expenses",
-           data: weekdata,
-           backgroundColor: dynamicColor,
-           borderWidth: 1
-         },
-       ],
-     };
-   }, [dynamicColor, weekdata]);
-   const options = {
-     responsive: true,
-     plugins: {
-       legend: {
-         position: "top",
-       },
-       title: {
-         display: true,
-         text: "Expenses Of This Month",
-       },
-     },
-   } as const;
+  if (expenses.length === 0) {
+    return (
+      <div className="p-12 text-center">
+        <h3 className="text-lg font-semibold text-gray-500">
+          No expenses recorded yet
+        </h3>
+      </div>
+    );
+  }
 
-   return (
-     <div>
-       {isLoading ? (
-         <div>
-           <div className="p-12 text-center text-gray-500">
-             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1976e8] border-r-transparent align-[-0.125em]" />
-             <p className="mt-3 text-sm">Loading...</p>
-           </div>
-         </div>
-       ): error ? (
-        <div className="p-12 text-center text-red-500">
-          <p className="text-sm">Failed to load . Please try again.</p>
-        </div>
-      ) : expenses.length === 0 ? (
-        <div className="p-12 text-center">
-          
-          <h3 className="mt-4 text-lg font-semibold text-gray-500">
-            No Expenses recorded yet
-          </h3>
-        
-          
-        </div>
-      )  : (
-         <Bar data={data} options={options} />
-       )}
-     </div>
-   );
+  return <Bar data={data} options={options} />;
 }

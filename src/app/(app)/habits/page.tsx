@@ -19,25 +19,37 @@ export default function HabitsPage() {
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
+
     setTimeout(() => {
       setToastMessage(null);
     }, 2500);
   };
 
-  const handleToggle = async (habitId: string, currentDone: boolean) => {
+  const handleToggle = async (
+    habitId: string,
+    currentDone: boolean,
+  ) => {
     try {
       await toggleMutation.mutateAsync({
         habitId,
         targetCompleted: !currentDone,
       });
-      showToast(!currentDone ? "Habit completed! 🔥" : "Marked incomplete");
+
+      showToast(
+        !currentDone
+          ? "Habit completed! 🔥"
+          : "Marked incomplete",
+      );
     } catch {
       showToast("Failed to update habit status");
     }
   };
 
   const handleDelete = async (habitId: string) => {
-    if (!confirm("Are you sure you want to delete this habit?")) return;
+    if (!confirm("Are you sure you want to delete this habit?")) {
+      return;
+    }
+
     try {
       await deleteMutation.mutateAsync(habitId);
       showToast("Habit deleted");
@@ -48,9 +60,10 @@ export default function HabitsPage() {
 
   return (
     <div className="space-y-6">
+
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 rounded-xl bg-gray-900 px-5 py-3 text-sm font-medium text-white shadow-xl animate-fade-in">
+        <div className="fixed bottom-6 right-6 z-50 rounded-xl bg-gray-900 px-5 py-3 text-sm font-medium text-white shadow-xl animate-fade-in dark:bg-white dark:text-gray-900">
           {toastMessage}
         </div>
       )}
@@ -58,10 +71,11 @@ export default function HabitsPage() {
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
             Your Habits
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Build routines and protect your streaks.
           </p>
         </div>
@@ -69,34 +83,46 @@ export default function HabitsPage() {
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center justify-center rounded-lg bg-[#1976e8] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1267cf] shadow-sm"
+          className="inline-flex items-center justify-center rounded-lg bg-[#1976e8] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1267cf]"
         >
           + Add Habit
         </button>
       </div>
 
       {/* Habits Content */}
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+
         {isLoading ? (
-          <div className="p-12 text-center text-gray-500">
+          <div className="p-12 text-center text-gray-500 dark:text-gray-400">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1976e8] border-r-transparent align-[-0.125em]" />
-            <p className="mt-3 text-sm">Loading your habits...</p>
+
+            <p className="mt-3 text-sm">
+              Loading your habits...
+            </p>
           </div>
+
         ) : error ? (
-          <div className="p-12 text-center text-red-500">
-            <p className="text-sm">Failed to load habits. Please try again.</p>
+          <div className="p-12 text-center text-red-500 dark:text-red-400">
+            <p className="text-sm">
+              Failed to load habits. Please try again.
+            </p>
           </div>
+
         ) : habits.length === 0 ? (
           <div className="p-12 text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-2xl text-[#1976e8]">
+
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-2xl text-[#1976e8] dark:bg-blue-950/40">
               ✓
             </div>
-            <h3 className="mt-4 text-lg font-semibold text-gray-900">
+
+            <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
               No habits created yet
             </h3>
-            <p className="mt-1 text-sm text-gray-500">
+
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Start building your daily routine by adding your first habit.
             </p>
+
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
@@ -105,82 +131,124 @@ export default function HabitsPage() {
               + Create Your First Habit
             </button>
           </div>
+
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+
+            <table className="w-full border-collapse text-left">
+
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50/50 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                <tr className="border-b border-gray-100 bg-gray-50/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:border-gray-800 dark:bg-gray-950/50 dark:text-gray-400">
                   <th className="px-6 py-4">Habit</th>
                   <th className="px-6 py-4">Category</th>
                   <th className="px-6 py-4">Streak</th>
                   <th className="px-6 py-4">Today</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+                  <th className="px-6 py-4 text-right">
+                    Actions
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+
                 {habits.map((habit) => (
-                  <tr key={habit.id} className="transition hover:bg-gray-50/60">
+                  <tr
+                    key={habit.id}
+                    className="transition hover:bg-gray-50/60 dark:hover:bg-gray-800/50"
+                  >
+
+                    {/* Habit */}
                     <td className="px-6 py-4">
-                      <span className="font-semibold text-gray-900">
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         {habit.name}
                       </span>
                     </td>
+
+                    {/* Category */}
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-[#1976e8]">
+                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-[#1976e8] dark:bg-blue-950/40 dark:text-blue-400">
                         {habit.category || "General"}
                       </span>
                     </td>
+
+                    {/* Streak */}
                     <td className="px-6 py-4">
-                      <span className="font-semibold text-gray-800">
+                      <span className="font-semibold text-gray-800 dark:text-gray-200">
                         🔥 {habit.streak}{" "}
-                        <span className="text-xs font-normal text-gray-500">
-                          {habit.streak === 1 ? "day" : "days"}
+
+                        <span className="text-xs font-normal text-gray-500 dark:text-gray-400">
+                          {habit.streak === 1
+                            ? "day"
+                            : "days"}
                         </span>
                       </span>
                     </td>
+
+                    {/* Today */}
                     <td className="px-6 py-4">
                       <button
                         type="button"
-                        disabled={toggleMutation.isPending || habit.doneToday}
-                        onClick={() => handleToggle(habit.id, habit.doneToday)}
+                        disabled={
+                          toggleMutation.isPending ||
+                          habit.doneToday
+                        }
+                        onClick={() =>
+                          handleToggle(
+                            habit.id,
+                            habit.doneToday,
+                          )
+                        }
                         className={`rounded-lg px-4 py-2 text-xs font-semibold transition ${
                           habit.doneToday
                             ? "bg-[#1976e8] text-white shadow-sm hover:bg-[#1267cf] disabled:cursor-not-allowed disabled:opacity-50"
-                            : "border border-gray-300  bg-white text-[#1976e8] hover:bg-blue-50"
+                            : "border border-gray-300 bg-white text-[#1976e8] hover:bg-blue-50 dark:border-gray-600 dark:bg-gray-900 dark:text-blue-400 dark:hover:bg-blue-950/30"
                         }`}
                       >
-                        {habit.doneToday ? "Completed ✓" : "Mark complete"}
+                        {habit.doneToday
+                          ? "Completed ✓"
+                          : "Mark complete"}
                       </button>
                     </td>
+
+                    {/* Actions */}
                     <td className="px-6 py-4 text-right">
                       <button
                         type="button"
                         disabled={deleteMutation.isPending}
-                        onClick={() => handleDelete(habit.id)}
-                        className="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-100"
+                        onClick={() =>
+                          handleDelete(habit.id)
+                        }
+                        className="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-100 dark:bg-red-950/30 dark:text-red-400 dark:hover:bg-red-950/50"
                       >
                         Delete
                       </button>
                     </td>
+
                   </tr>
                 ))}
+
               </tbody>
             </table>
           </div>
         )}
       </div>
 
-      {/* Add Habit Modal Dialog */}
+      {/* Add Habit Modal */}
       <ModalDialog
         isOpen={isModalOpen}
         setIsOpen={setIsModalOpen}
         dismiss={true}
       >
         <div className="flex flex-col">
-          <h2 className="text-xl font-bold text-gray-900">Add a new habit</h2>
-          <p className="mt-0.5 text-xs text-gray-500">
+
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            Add a new habit
+          </h2>
+
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
             Set up a routine to build consistency.
           </p>
+
           <Form setIsOpen={setIsModalOpen} />
         </div>
       </ModalDialog>

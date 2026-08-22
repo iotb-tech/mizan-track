@@ -1,8 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogoM } from ".";
 
 type Linkprop = {
   name: string;
@@ -20,15 +20,18 @@ export function NavBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="w-full border-b border-neutral-200 bg-white">
+    <nav className="w-full border-b border-neutral-200 bg-white dark:border-gray-800 dark:bg-gray-950">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-        
+
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <LogoM />
-          <span className="text-xl font-bold text-neutral-900">
-            Mizan Track
-          </span>
+          <Image
+            src="/images/mizan-logo-full.png"
+            alt="Mizan Track"
+            width={180}
+            height={60}
+            className="object-contain"
+          />
         </Link>
 
         {/* Navigation Links */}
@@ -40,7 +43,7 @@ export function NavBar() {
                 className={`text-sm font-medium transition-colors hover:text-primary-500 ${
                   pathname === link.href
                     ? "text-primary-500"
-                    : "text-neutral-700"
+                    : "text-neutral-700 dark:text-gray-300"
                 }`}
               >
                 {link.name}
@@ -53,7 +56,7 @@ export function NavBar() {
         <div className="flex items-center gap-3">
           <Link
             href="/login"
-            className="hidden rounded-lg px-4 py-2 text-sm font-semibold text-neutral-700 transition hover:text-primary-500 sm:block"
+            className="hidden rounded-lg px-4 py-2 text-sm font-semibold text-neutral-700 transition hover:text-primary-500 dark:text-gray-300 sm:block"
           >
             Login
           </Link>

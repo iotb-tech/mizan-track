@@ -15,13 +15,14 @@ export function Field({
   children: ReactNode;
 }) {
   return (
-    <div className="">
+    <div>
       <label
-        className="text-sm font-semibold  text-neutral-800"
+        className="text-sm font-semibold text-neutral-800 dark:text-neutral-200"
         htmlFor={htmlFor}
       >
         {label}
       </label>
+
       {children}
 
       {error && (
@@ -40,37 +41,47 @@ export const Input = forwardRef<
   return (
     <input
       ref={ref}
-      className="w-full border focus:border-primary-500 outline-0 px-3 py-2 mt-1 border-neutral-400 rounded-lg mb-2 "
+      className="mt-1 mb-2 w-full rounded-lg border border-neutral-400 bg-white px-3 py-2 text-neutral-900 outline-0 focus:border-primary-500 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
       {...prop}
     />
   );
 });
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant : 'primary' | 'secondary' | 'auth' | 'error'| 'muted';
-}
-export function Button({ variant, ...prop }:ButtonProps) {
+  variant: "primary" | "secondary" | "auth" | "error" | "muted";
+};
 
+export function Button({ variant, ...prop }: ButtonProps) {
   return (
     <button
-      className={`${variant === "primary" ? "bg-primary-500 mt-3" : variant === "error" ? "bg-error border-0 " : variant === 'auth'? "bg-primary-500 w-full" :"bg-neutral-50 text-primary-600 border my-auto border-primary-500"} px-3 py-1  text-center mb-5 text-lg rounded-2xl text-neutral-50 disabled:cursor-not-allowed disabled:opacity-15 font-semibold`}
+      className={`${
+        variant === "primary"
+          ? "mt-3 bg-primary-500"
+          : variant === "error"
+            ? "border-0 bg-error"
+            : variant === "auth"
+              ? "w-full bg-primary-500"
+              : "my-auto border border-primary-500 bg-neutral-50 text-primary-600 dark:bg-neutral-800 dark:text-primary-400"
+      } mb-5 rounded-2xl px-3 py-1 text-center text-lg font-semibold text-neutral-50 disabled:cursor-not-allowed disabled:opacity-15`}
       {...prop}
     />
   );
 }
 
-export const Select = forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HTMLSelectElement>>(
-  function Select({children, ...prop},ref){
-    return (
-      <select ref={ref} {...prop}>{children}</select>
-    )
-  }
-)
-
+export const Select = forwardRef<
+  HTMLSelectElement,
+  React.SelectHTMLAttributes<HTMLSelectElement>
+>(function Select({ children, ...prop }, ref) {
+  return (
+    <select ref={ref} {...prop}>
+      {children}
+    </select>
+  );
+});
 
 type LogoProp = {
-  variant?: 'primary' | 'secondary' 
-}
+  variant?: "primary" | "secondary";
+};
 
 export function LogoM() {
   return (
@@ -83,56 +94,71 @@ export function LogoM() {
     />
   );
 }
+
 export function Logo({ variant }: LogoProp) {
   return (
     <Image
       src="/images/mizan-logo-full.png"
       alt="Mizan Track"
-      width={300}
-      height={100}
-      className="object-contain"
+      width={500}
+      height={167}
+      className="h-auto w-full object-contain"
     />
   );
 }
 
-
-export function Header(){
+export function Header() {
   return (
     <header>
-      <div className="flex items-center justify-between px-10 py-1 bg-neutral-200">
+      <div className="flex items-center justify-between bg-neutral-200 px-10 py-1 dark:bg-neutral-900">
         <Logo variant="secondary" />
         <NavBar />
+
         <Button variant="primary">
-          <Link href='/register'>Get started</Link>
+          <Link href="/register">Get started</Link>
         </Button>
       </div>
     </header>
-  )
+  );
 }
 
-export function Footer(){
+export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <div className="bg-neutral-600 text-neutral-50 borber-t border-t-neutral-200">
-      <p className=" mx-auto py-5 text-center ">&copy; Copyright {year}
+    <div className="border-t border-neutral-200 bg-neutral-600 text-neutral-50 dark:border-neutral-700 dark:bg-neutral-950">
+      <p className="mx-auto py-5 text-center">
+        &copy; Copyright {year}
       </p>
     </div>
-  )
+  );
 }
 
-
-export function Card({icon, title, content}: {icon:string; title: string; content: string}){
+export function Card({
+  icon,
+  title,
+  content,
+}: {
+  icon: string;
+  title: string;
+  content: string;
+}) {
   return (
-    <div className="flex flex-col gap-3 justify-center bg-neutral-100 py-5 px-7 rounded-xl shadow-lg">
-      <span className="h-10 w-10 grid place-items-center text-xl bg-primary-100 text-primary-500 rounded-lg shadow-xl" >{icon}</span>
-      <h3 className="text-xl tracking-tight font-sans mb-3">{title}</h3>
-      <p className="text-xs mb-5">{content}</p>
+    <div className="flex flex-col justify-center gap-3 rounded-xl bg-neutral-100 px-7 py-5 shadow-lg dark:bg-neutral-800">
+      <span className="grid h-10 w-10 place-items-center rounded-lg bg-primary-100 text-xl text-primary-500 shadow-xl dark:bg-primary-500/10 dark:text-primary-400">
+        {icon}
+      </span>
 
+      <h3 className="mb-3 font-sans text-xl tracking-tight text-neutral-900 dark:text-white">
+        {title}
+      </h3>
+
+      <p className="mb-5 text-xs text-neutral-600 dark:text-neutral-300">
+        {content}
+      </p>
     </div>
-  )
+  );
 }
-
 
 export { default as DashboardShell } from "./dashboard/DashboardShell";
 export { default as DashboardHeader } from "./dashboard/DashboardHeader";
