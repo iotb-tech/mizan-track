@@ -48,7 +48,7 @@ export function Hero() {
         </div>
 
         {/* Right side of our hero page */}
-        <div className="relative hidden lg:block">
+        <div id="overview" className="relative hidden lg:block">
           <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-800">
 
             {/* Mini dashboard header */}
