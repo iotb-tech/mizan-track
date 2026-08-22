@@ -27,28 +27,28 @@ export function Hero() {
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link
               href="/register"
-              className="rounded-lg bg-primary-500 px-6 py-3 font-semibold text-white transition hover:opacity-90"
+              className="rounded-xl bg-primary-500 px-7 py-3.5 font-semibold text-white shadow-md shadow-primary-500/20 transition hover:bg-primary-600 active:scale-[0.98]"
             >
-              Start Tracking 
+              Get Started
             </Link>
 
             <Link
               href="/login"
-              className="rounded-lg border border-neutral-300 bg-white px-6 py-3 font-semibold text-neutral-700 transition hover:border-primary-500 hover:text-primary-500"
+              className="rounded-xl border border-neutral-300 bg-white px-7 py-3.5 font-semibold text-neutral-700 transition hover:border-neutral-400 hover:bg-neutral-50 active:scale-[0.98]"
             >
-              Login
+              Sign In
             </Link>
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-6 text-sm text-neutral-500">
-            <span>✓ Track habits</span>
-            <span>✓ Manage expenses</span>
-            <span>✓ Monitor progress</span>
+          <div className="mt-8 flex flex-wrap gap-6 text-sm font-medium text-neutral-500">
+            <span className="flex items-center gap-1.5"><span className="text-primary-500 font-bold">✓</span> Track habits</span>
+            <span className="flex items-center gap-1.5"><span className="text-primary-500 font-bold">₦</span> Manage expenses</span>
+            <span className="flex items-center gap-1.5"><span className="text-primary-500 font-bold">↗</span> Monitor progress</span>
           </div>
         </div>
 
         {/* Right side of our hero page */}
-        <div className="relative hidden lg:block">
+        <div id="overview" className="relative hidden lg:block">
           <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl">
 
             {/* Mini dashboard header */}

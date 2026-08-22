@@ -4,68 +4,68 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoM } from ".";
 
-type Linkprop = {
-  name: string;
-  href: string;
-  id: string;
-};
-
-export const links: Linkprop[] = [
-  { name: "Home", href: "/welcome", id: "home" },
-  { name: "Login", href: "/login", id: "login" },
-  { name: "Register", href: "/register", id: "register" },
-];
-
 export function NavBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="w-full border-b border-neutral-200 bg-white">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-        
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
+    <header className="sticky top-0 z-40 w-full border-b border-neutral-200/80 bg-white/95 backdrop-blur-md">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
+        {/* Brand Logo */}
+        <Link href="/" className="flex items-center gap-3 group">
           <LogoM />
-          <span className="text-xl font-bold text-neutral-900">
-            Mizan Track
-          </span>
+          <div className="flex flex-col">
+            <span className="text-xl font-extrabold tracking-tight text-neutral-900 group-hover:text-primary-600 transition">
+              MIZAN TRACK
+            </span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-neutral-400">
+              Consistency • Expenses • Progress
+            </span>
+          </div>
         </Link>
 
-        {/* Navigation Links */}
-        <ul className="hidden items-center gap-8 md:flex">
-          {links.map((link) => (
-            <li key={link.name}>
-              <Link
-                href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-primary-500 ${
-                  pathname === link.href
-                    ? "text-primary-500"
-                    : "text-neutral-700"
-                }`}
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {/* Center Navigation Links */}
+        <nav className="hidden items-center gap-8 md:flex">
+          <Link
+            href="/"
+            className={`text-sm font-semibold transition ${
+              pathname === "/"
+                ? "text-primary-600"
+                : "text-neutral-600 hover:text-primary-600"
+            }`}
+          >
+            Home
+          </Link>
+          <a
+            href="#features"
+            className="text-sm font-semibold text-neutral-600 transition hover:text-primary-600"
+          >
+            Features
+          </a>
+          <a
+            href="#overview"
+            className="text-sm font-semibold text-neutral-600 transition hover:text-primary-600"
+          >
+            Overview
+          </a>
+        </nav>
 
-        {/* Authentication Buttons */}
+        {/* Action Buttons */}
         <div className="flex items-center gap-3">
           <Link
             href="/login"
-            className="hidden rounded-lg px-4 py-2 text-sm font-semibold text-neutral-700 transition hover:text-primary-500 sm:block"
+            className="rounded-xl px-4 py-2.5 text-sm font-semibold text-neutral-700 transition hover:text-primary-600 hover:bg-neutral-50"
           >
-            Login
+            Sign In
           </Link>
 
           <Link
             href="/register"
-            className="rounded-lg bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+            className="rounded-xl bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-600 active:scale-[0.98]"
           >
             Get Started
           </Link>
         </div>
       </div>
-    </nav>
+    </header>
   );
-}
+}

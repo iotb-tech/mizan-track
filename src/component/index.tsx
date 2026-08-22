@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { forwardRef, type ReactNode } from "react";
-import { NavBar } from "./nav-bar";
 
 export function Field({
   label,
@@ -100,19 +98,7 @@ export function Logo({variant}: LogoProp) {
 
 
 
-export function Header(){
-  return (
-    <header>
-      <div className="flex items-center justify-between px-10 py-1 bg-neutral-200">
-        <Logo variant="secondary" />
-        <NavBar />
-        <Button variant="primary">
-          <Link href='/register'>Get started</Link>
-        </Button>
-      </div>
-    </header>
-  )
-}
+
 
 export function Footer(){
   const year = new Date().getFullYear();
