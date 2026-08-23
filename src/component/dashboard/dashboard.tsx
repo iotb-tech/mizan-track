@@ -14,11 +14,7 @@ export default function Dashboard({ children }: { children: ReactNode }) {
   const { user_id, userName } = useData();
   const { data: habits = [] } = useHabits(user_id);
 
-  const {
-    data: expenses = [],
-    isLoading,
-    error,
-  } = useExpenses(user_id);
+  const { data: expenses = [], isLoading, error } = useExpenses(user_id);
 
   const [total, setTotal] = useState(0);
   const [islastWeek, setislastWeek] = useState("this_week");
@@ -31,9 +27,7 @@ export default function Dashboard({ children }: { children: ReactNode }) {
   const totalHabits = habits.length;
 
   const habitProgressPct =
-    totalHabits > 0
-      ? Math.round((completedToday / totalHabits) * 100)
-      : 0;
+    totalHabits > 0 ? Math.round((completedToday / totalHabits) * 100) : 0;
 
   return (
     <>
@@ -42,7 +36,7 @@ export default function Dashboard({ children }: { children: ReactNode }) {
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 transition-colors dark:text-white sm:text-3xl">
-              Welcome back, {userName.split(" ")[0] ?? ""} 👋
+              Welcome back, {userName.split(" ")[0] ?? ""}
             </h1>
 
             <p className="mt-1 text-sm text-gray-500 transition-colors dark:text-gray-400">
@@ -175,9 +169,7 @@ export default function Dashboard({ children }: { children: ReactNode }) {
                 <div className="p-12 text-center text-gray-500 dark:text-gray-400">
                   <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1976e8] border-r-transparent align-[-0.125em]" />
 
-                  <p className="mt-3 text-sm">
-                    Loading your expenses...
-                  </p>
+                  <p className="mt-3 text-sm">Loading your expenses...</p>
                 </div>
               ) : error ? (
                 <div className="p-12 text-center text-red-500">
@@ -219,9 +211,7 @@ export default function Dashboard({ children }: { children: ReactNode }) {
                     } else if (dayAgo === 1) {
                       date = "Yesterday";
                     } else {
-                      date = new Date(
-                        expense.date,
-                      ).toLocaleDateString();
+                      date = new Date(expense.date).toLocaleDateString();
                     }
 
                     return (
@@ -244,9 +234,7 @@ export default function Dashboard({ children }: { children: ReactNode }) {
                             ₦{expense.amount}
                           </p>
 
-                          <p className="text-xs text-gray-400">
-                            {date}
-                          </p>
+                          <p className="text-xs text-gray-400">{date}</p>
                         </div>
                       </div>
                     );
