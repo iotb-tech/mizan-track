@@ -149,7 +149,7 @@ return (
               aria-label={showPassword ? "Hide password" : "Show password"}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition"
             >
-              {showPassword ? "🙈" : "👁"}
+              {showPassword ? "Hide" : "Show"}
             </button>
           </div>
 
