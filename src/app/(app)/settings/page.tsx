@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useData } from "@/lib/UserDataContext";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTheme } from "@/lib/ThemeContext";
 
 export default function SettingsPage() {
   const supabase = createClient();
@@ -13,18 +14,7 @@ export default function SettingsPage() {
   const { userName } = useData();
 
   // ─── Theme ───
-  const [darkMode, setDarkMode] = useState(false);
-
-  useEffect(() => {
-    setDarkMode(document.documentElement.classList.contains("dark"));
-  }, []);
-
-  function toggleTheme() {
-    const next = !darkMode;
-    document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
-    setDarkMode(next);
-  }
+  const { darkMode, toggleTheme } = useTheme();
 
   // ─── Profile update ───
   const [displayName, setDisplayName] = useState(userName);
