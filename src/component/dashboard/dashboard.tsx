@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useExpenses } from "@/hooks/useExpenses";
 import { ExpenseForm } from "../ExpenseForm";
 import { ModalDialog } from "../ModalDialog";
+import { MonthlyBudgetCard } from "@/component/MonthlyBudgetCard";
 
 export default function Dashboard({ children }: { children: ReactNode }) {
   const { user_id, userName } = useData();
@@ -99,19 +100,7 @@ export default function Dashboard({ children }: { children: ReactNode }) {
           </div>
 
           {/* Monthly Budget */}
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-900">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Monthly Budget
-            </p>
-
-            <h3 className="mt-2 text-xl font-bold text-gray-900 dark:text-white">
-              ₦8,700 / ₦80,000
-            </h3>
-
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
-              <div className="h-full w-[12%] rounded-full bg-[#1976e8]" />
-            </div>
-          </div>
+          <MonthlyBudgetCard expenses={expenses} userId={user_id} />
         </section>
 
         {/* Habit + Spending */}

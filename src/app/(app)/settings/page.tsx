@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useData } from "@/lib/UserDataContext";
 import { useRouter } from "next/navigation";
@@ -11,10 +11,30 @@ export default function SettingsPage() {
   const supabase = createClient();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { userName } = useData();
+  const { userName, user_id } = useData();
 
   // ─── Theme ───
   const { darkMode, toggleTheme } = useTheme();
+
+  // ─── Monthly Budget ───
+  const BUDGET_KEY = `mizan_budget_${user_id}`;
+  const [budgetInput, setBudgetInput] = useState("");
+  const [budgetStatus, setBudgetStatus] = useState<
+    "idle" | "saved"
+  >("idle");
+
+  useEffect(() => {
+    const saved = localStorage.getItem(BUDGET_KEY);
+    if (saved) setBudgetInput(saved);
+  }, [BUDGET_KEY]);
+
+  function handleBudgetSave() {
+    const num = Math.max(0, Number(budgetInput) || 0);
+    localStorage.setItem(BUDGET_KEY, String(num));
+    setBudgetInput(String(num));
+    setBudgetStatus("saved");
+    setTimeout(() => setBudgetStatus("idle"), 2000);
+  }
 
   // ─── Profile update ───
   const [displayName, setDisplayName] = useState(userName);
@@ -127,6 +147,58 @@ export default function SettingsPage() {
               }`}
             />
           </button>
+        </div>
+      </section>
+
+      {/* ─── Monthly Budget ─── */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+          Monthly Budget
+        </h2>
+        <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
+          Set your monthly spending limit to track on your dashboard.
+        </p>
+
+        <div className="mt-5 space-y-4">
+          <div>
+            <label
+              htmlFor="monthlyBudget"
+              className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-gray-400"
+            >
+              Budget Target (₦)
+            </label>
+
+            <div className="relative mt-1.5">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-slate-500 dark:text-gray-400">
+                ₦
+              </span>
+              <input
+                id="monthlyBudget"
+                type="number"
+                min="0"
+                value={budgetInput}
+                onChange={(e) => setBudgetInput(e.target.value)}
+                placeholder="e.g. 80000"
+                className="w-full rounded-xl border border-slate-300 bg-white py-2.5 pl-8 pr-3.5 text-sm text-slate-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleBudgetSave}
+              className="rounded-xl bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-600 active:scale-[0.99]"
+            >
+              Save Budget
+            </button>
+
+            {budgetStatus === "saved" && (
+              <span className="text-xs font-medium text-green-600">
+                ✓ Budget saved
+              </span>
+            )}
+          </div>
         </div>
       </section>
 

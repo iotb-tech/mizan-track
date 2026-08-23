@@ -17,7 +17,6 @@ export default function Page() {
   const { data: habits = [] } = useHabits(user_id);
 
   const {
-    data: expenses = [],
     isLoading,
     error,
   } = useExpenses(user_id);
