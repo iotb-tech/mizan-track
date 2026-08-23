@@ -80,7 +80,7 @@ export default function ExpensesPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left">
+            <table className="w-full min-w-[500px] border-collapse text-left">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:border-gray-700 dark:bg-gray-700/40 dark:text-gray-400">
                   <th className="px-6 py-4">Date</th>

@@ -3,10 +3,10 @@ import Link from "next/link";
 export function Hero() {
   return (
     <section className="bg-neutral-50 dark:bg-gray-900">
-      <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-7xl items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:gap-16">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:min-h-[calc(100vh-5rem)] lg:grid-cols-2 lg:gap-16 lg:py-16">
 
         {/* Left side of our hero page */}
-        <div className="max-w-xl">
+        <div className="text-center lg:text-left lg:max-w-xl">
           <span className="mb-4 inline-block text-sm font-semibold uppercase tracking-[0.2em] text-primary-500">
             Your daily balance, simplified
           </span>
@@ -24,7 +24,7 @@ export function Hero() {
             and money are going.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
             <Link
               href="/register"
               className="rounded-lg bg-primary-500 px-6 py-3 font-semibold text-white transition hover:opacity-90"
@@ -40,7 +40,7 @@ export function Hero() {
             </Link>
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-6 text-sm text-neutral-500 dark:text-gray-400">
+          <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-neutral-500 dark:text-gray-400 lg:justify-start">
             <span>✓ Track habits</span>
             <span>✓ Manage expenses</span>
             <span>✓ Monitor progress</span>
@@ -48,7 +48,7 @@ export function Hero() {
         </div>
 
         {/* Right side of our hero page */}
-        <div id="overview" className="relative hidden lg:block">
+        <div id="overview" className="relative w-full">
           <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-800">
 
             {/* Mini dashboard header */}
@@ -68,10 +68,10 @@ export function Hero() {
               </div>
             </div>
 
-            <div className="flex min-h-330px">
+            <div className="flex min-h-[200px] sm:min-h-[330px]">
 
               {/* Mini sidebar */}
-              <aside className="w-150px border-r border-neutral-200 bg-neutral-50 p-4 dark:border-gray-700 dark:bg-gray-900">
+              <aside className="w-28 sm:w-36 border-r border-neutral-200 bg-neutral-50 p-3 sm:p-4 dark:border-gray-700 dark:bg-gray-900">
                 <div className="space-y-2 text-xs">
 
                   <div className="rounded-lg bg-primary-500 px-3 py-2 font-medium text-white">

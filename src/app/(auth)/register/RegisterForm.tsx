@@ -61,7 +61,7 @@ export function RegisterForm() {
     <form
       onSubmit={handleSubmit(onSubmit)}
       noValidate
-      className="w-95 max-md:w-85 px-3 py-1 space-y-3"
+      className="w-full px-3 py-1 space-y-3"
     >
       <div>
   <label

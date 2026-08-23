@@ -1,6 +1,6 @@
 export function Features() {
   return (
-    <section id="features" className="bg-white px-6 py-20 dark:bg-gray-950">
+    <section id="features" className="bg-white px-4 py-14 sm:px-6 sm:py-20 dark:bg-gray-950">
       <div className="mx-auto max-w-7xl">
 
         {/* Section heading */}
