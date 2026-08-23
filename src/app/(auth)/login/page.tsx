@@ -20,7 +20,7 @@ export default function Page(){
           </Link>
         </p>
         <div className="max-md:text-base mt-5 mb-7">
-          <Link href="/" className="px-3 text-warning/90">
+          <Link href="/forget-password" className="px-3 text-warning/90">
             Forgot password →
           </Link>
         </div>

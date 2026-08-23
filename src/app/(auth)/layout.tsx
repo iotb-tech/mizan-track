@@ -12,12 +12,14 @@ export default function LayOut({
 
   const isRegister = pathname === "/register";
   const isLogin = pathname === "/login";
+  const isForgotPassword =
+    pathname === "/forget-password" || pathname === "/reset-password";
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-gray-950 md:grid md:grid-cols-2">
 
       {/* Branding Panel */}
-      {isRegister || isLogin ? (
+      {(isRegister || isLogin || isForgotPassword) && (
         <div className="flex min-h-[420px] flex-col justify-center bg-[linear-gradient(145deg,#1d4ed8,#3b82f6)] px-4 py-10 sm:px-8 md:min-h-screen md:px-0">
 
           <div className="flex flex-col justify-center">
@@ -34,19 +36,22 @@ export default function LayOut({
               <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">
                 {isRegister
                   ? "Start your consistency journey."
-                  : "Welcome Back."}
+                  : isForgotPassword
+                    ? "Reset Your Password."
+                    : "Welcome Back."}
               </h1>
 
               <p className="mx-auto mt-4 max-w-lg text-sm font-medium leading-6 text-blue-100 sm:mt-5 sm:text-base sm:leading-7">
                 {isRegister
                   ? "Build better habits and take control of your spending from one place."
-                  : "Pick up where you left off and keep moving forward."}
+                  : isForgotPassword
+                    ? "Create a new password and get back to your account."
+                    : "Pick up where you left off and keep moving forward."}
               </p>
             </div>
-
           </div>
         </div>
-      ) : null}
+      )}
 
       {/* Form Panel */}
       <div className="flex min-h-[calc(100vh-420px)] w-full items-center justify-center bg-neutral-50 px-4 py-8 dark:bg-gray-950 sm:px-6 md:min-h-screen md:px-8">
