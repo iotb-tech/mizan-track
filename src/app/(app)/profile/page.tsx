@@ -48,23 +48,21 @@ export default function ProfilePage() {
   }, [supabase]);
 
   return (
-    <div>
-      <main className="min-h-screen bg-[#f5f8fc] dark:bg-[#0b1220] px-4 py-6 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          {/* Page Header */}
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Profile
-            </h1>
+    <div className="mx-auto max-w-5xl">
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+          Profile
+        </h1>
 
-            <p className="mt-1 text-sm text-slate-500 dark:text-gray-400 ">
-              View and manage your account information.
-            </p>
-          </div>
+        <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
+          View and manage your account information.
+        </p>
+      </div>
 
-          {/* Profile Card */}
-          <div className="rounded-2xl border border-slate-200 bg-white dark:border-gray-700 dark:bg-gray-900 p-6 shadow-sm">
-            {loading ? (
+      {/* Profile Card */}
+      <div className="rounded-2xl border border-slate-200 bg-white dark:border-gray-700 dark:bg-gray-900 p-6 shadow-sm">
+        {loading ? (
               <div className="flex items-center justify-center py-12">
                 <p className="text-sm text-slate-500">
                   Loading profile...
@@ -149,8 +147,6 @@ export default function ProfilePage() {
               </>
             )}
           </div>
-        </div>
-      </main>
     </div>
   );
 }

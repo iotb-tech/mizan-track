@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useExpenses } from "@/hooks/useExpenses";
 import { useData } from "@/lib/UserDataContext";
 import { ModalDialog } from "@/component/ModalDialog";
 import { ExpenseForm } from "@/component/ExpenseForm";
+import { MonthlyBudgetCard } from "@/component/MonthlyBudgetCard";
 
 export default function ExpensesPage() {
   const { user_id } = useData();
@@ -16,6 +17,10 @@ export default function ExpensesPage() {
   } = useExpenses(user_id);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const totalSpent = useMemo(() => {
+    return expenses.reduce((sum, e) => sum + e.amount, 0);
+  }, [expenses]);
 
   return (
     <div className="space-y-6">
@@ -39,6 +44,39 @@ export default function ExpensesPage() {
           + Add Expense
         </button>
       </div>
+
+      {/* Summary Cards with Monthly Budget */}
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <MonthlyBudgetCard
+          expenses={expenses}
+          userId={user_id}
+          className="sm:col-span-2 lg:col-span-1"
+        />
+
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-900">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            Total Spent (All Time)
+          </p>
+          <h3 className="mt-2 text-xl font-bold text-gray-900 dark:text-white">
+            ₦{totalSpent.toLocaleString("en-NG")}
+          </h3>
+          <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
+            Across {expenses.length} recorded expense{expenses.length === 1 ? "" : "s"}
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-900">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            Total Entries
+          </p>
+          <h3 className="mt-2 text-xl font-bold text-gray-900 dark:text-white">
+            {expenses.length}
+          </h3>
+          <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
+            Tracked in your account
+          </p>
+        </div>
+      </section>
 
       {/* Expenses Content */}
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -80,7 +118,7 @@ export default function ExpensesPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left">
+            <table className="w-full min-w-[500px] border-collapse text-left">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:border-gray-700 dark:bg-gray-700/40 dark:text-gray-400">
                   <th className="px-6 py-4">Date</th>

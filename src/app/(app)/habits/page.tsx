@@ -25,21 +25,14 @@ export default function HabitsPage() {
     }, 2500);
   };
 
-  const handleToggle = async (
-    habitId: string,
-    currentDone: boolean,
-  ) => {
+  const handleToggle = async (habitId: string, currentDone: boolean) => {
     try {
       await toggleMutation.mutateAsync({
         habitId,
         targetCompleted: !currentDone,
       });
 
-      showToast(
-        !currentDone
-          ? "Habit completed! 🔥"
-          : "Marked incomplete",
-      );
+      showToast(!currentDone ? "Habit completed! " : "Marked incomplete");
     } catch {
       showToast("Failed to update habit status");
     }
@@ -60,7 +53,6 @@ export default function HabitsPage() {
 
   return (
     <div className="space-y-6">
-
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 rounded-xl bg-gray-900 px-5 py-3 text-sm font-medium text-white shadow-xl animate-fade-in dark:bg-white dark:text-gray-900">
@@ -91,26 +83,18 @@ export default function HabitsPage() {
 
       {/* Habits Content */}
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
-
         {isLoading ? (
           <div className="p-12 text-center text-gray-500 dark:text-gray-400">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1976e8] border-r-transparent align-[-0.125em]" />
 
-            <p className="mt-3 text-sm">
-              Loading your habits...
-            </p>
+            <p className="mt-3 text-sm">Loading your habits...</p>
           </div>
-
         ) : error ? (
           <div className="p-12 text-center text-red-500 dark:text-red-400">
-            <p className="text-sm">
-              Failed to load habits. Please try again.
-            </p>
+            <p className="text-sm">Failed to load habits. Please try again.</p>
           </div>
-
         ) : habits.length === 0 ? (
           <div className="p-12 text-center">
-
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-2xl text-[#1976e8] dark:bg-blue-950/40">
               ✓
             </div>
@@ -131,32 +115,25 @@ export default function HabitsPage() {
               + Create Your First Habit
             </button>
           </div>
-
         ) : (
           <div className="overflow-x-auto">
-
-            <table className="w-full border-collapse text-left">
-
+            <table className="w-full min-w-145 border-collapse text-left">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:border-gray-800 dark:bg-gray-950/50 dark:text-gray-400">
                   <th className="px-6 py-4">Habit</th>
                   <th className="px-6 py-4">Category</th>
                   <th className="px-6 py-4">Streak</th>
                   <th className="px-6 py-4">Today</th>
-                  <th className="px-6 py-4 text-right">
-                    Actions
-                  </th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
 
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-
                 {habits.map((habit) => (
                   <tr
                     key={habit.id}
                     className="transition hover:bg-gray-50/60 dark:hover:bg-gray-800/50"
                   >
-
                     {/* Habit */}
                     <td className="px-6 py-4">
                       <span className="font-semibold text-gray-900 dark:text-white">
@@ -174,12 +151,9 @@ export default function HabitsPage() {
                     {/* Streak */}
                     <td className="px-6 py-4">
                       <span className="font-semibold text-gray-800 dark:text-gray-200">
-                        🔥 {habit.streak}{" "}
-
+                        {habit.streak}{" "}
                         <span className="text-xs font-normal text-gray-500 dark:text-gray-400">
-                          {habit.streak === 1
-                            ? "day"
-                            : "days"}
+                          {habit.streak === 1 ? "day" : "days"}
                         </span>
                       </span>
                     </td>
@@ -188,25 +162,15 @@ export default function HabitsPage() {
                     <td className="px-6 py-4">
                       <button
                         type="button"
-                        disabled={
-                          toggleMutation.isPending ||
-                          habit.doneToday
-                        }
-                        onClick={() =>
-                          handleToggle(
-                            habit.id,
-                            habit.doneToday,
-                          )
-                        }
+                        disabled={toggleMutation.isPending || habit.doneToday}
+                        onClick={() => handleToggle(habit.id, habit.doneToday)}
                         className={`rounded-lg px-4 py-2 text-xs font-semibold transition ${
                           habit.doneToday
                             ? "bg-[#1976e8] text-white shadow-sm hover:bg-[#1267cf] disabled:cursor-not-allowed disabled:opacity-50"
                             : "border border-gray-300 bg-white text-[#1976e8] hover:bg-blue-50 dark:border-gray-600 dark:bg-gray-900 dark:text-blue-400 dark:hover:bg-blue-950/30"
                         }`}
                       >
-                        {habit.doneToday
-                          ? "Completed ✓"
-                          : "Mark complete"}
+                        {habit.doneToday ? "Completed ✓" : "Mark complete"}
                       </button>
                     </td>
 
@@ -215,18 +179,14 @@ export default function HabitsPage() {
                       <button
                         type="button"
                         disabled={deleteMutation.isPending}
-                        onClick={() =>
-                          handleDelete(habit.id)
-                        }
+                        onClick={() => handleDelete(habit.id)}
                         className="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-100 dark:bg-red-950/30 dark:text-red-400 dark:hover:bg-red-950/50"
                       >
                         Delete
                       </button>
                     </td>
-
                   </tr>
                 ))}
-
               </tbody>
             </table>
           </div>
@@ -240,7 +200,6 @@ export default function HabitsPage() {
         dismiss={true}
       >
         <div className="flex flex-col">
-
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             Add a new habit
           </h2>
