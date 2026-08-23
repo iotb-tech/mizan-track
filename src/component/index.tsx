@@ -95,7 +95,7 @@ export function LogoM() {
   );
 }
 
-export function Logo({ variant: _variant }: LogoProp = {}) {
+export function Logo({}: LogoProp) {
   return (
     <Image
       src="/images/mizan-logo-full.png"
