@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { forwardRef, type ReactNode } from "react";
+import { NavBar } from "./nav-bar";
 
 export function Field({
   label,

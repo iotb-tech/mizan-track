@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
+    <>
     <div>
       <div className="mb-6">
         <h2 className="text-2xl font-extrabold text-neutral-900 tracking-tight">
@@ -26,7 +27,8 @@ export default function RegisterPage() {
           Log in
         </Link>
       </p>
-    </>
+    </div>
+ </>
   );
 }
 
