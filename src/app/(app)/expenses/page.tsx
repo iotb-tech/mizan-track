@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useExpenses } from "@/hooks/useExpenses";
+import { useDeleteExpense } from "@/hooks/useDeleteExpense";
 import { useData } from "@/lib/UserDataContext";
 import { ModalDialog } from "@/component/ModalDialog";
 import { ExpenseForm } from "@/component/ExpenseForm";
@@ -16,7 +17,11 @@ export default function ExpensesPage() {
     error,
   } = useExpenses(user_id);
 
+  const deleteExpenseMutation = useDeleteExpense(user_id);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedExpenseId, setSelectedExpenseId] = useState<string | null>(null);
 
   const totalSpent = useMemo(() => {
     return expenses.reduce((sum, e) => sum + e.amount, 0);
@@ -125,6 +130,7 @@ export default function ExpensesPage() {
                   <th className="px-6 py-4">Category</th>
                   <th className="px-6 py-4">Amount</th>
                   <th className="px-6 py-4">Note</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
 
@@ -151,6 +157,19 @@ export default function ExpensesPage() {
                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                       {expense.note || "—"}
                     </td>
+
+                    <td className="rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/40">
+                      <button
+                        type="button"
+                        onClick={ () => {
+                        setSelectedExpenseId(expense.id);   
+                        setIsDeleteModalOpen(true);
+                        }}
+                      >
+                      Delete
+                      </button>
+                    </td>
+
                   </tr>
                 ))}
               </tbody>
@@ -177,6 +196,50 @@ export default function ExpensesPage() {
           <ExpenseForm setIsOpen={setIsModalOpen} />
         </div>
       </ModalDialog>
+
+  <ModalDialog
+  isOpen={isDeleteModalOpen}
+  setIsOpen={setIsDeleteModalOpen}
+  dismiss={true}
+>
+  <div className="flex flex-col">
+    <h2 className="text-xl font-bold text-red-500 dark:text-white">
+      Delete expense?
+    </h2>
+
+    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+      This action cannot be undone.
+    </p>
+
+    <div className="mt-6 flex justify-end gap-3">
+      <button
+        type="button"
+        onClick={() => setIsDeleteModalOpen(false)}
+        className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        disabled={deleteExpenseMutation.isPending}
+        onClick={() => {
+          if (selectedExpenseId) {
+            deleteExpenseMutation.mutate(selectedExpenseId, {
+              onSuccess: () => {
+                setIsDeleteModalOpen(false);
+                setSelectedExpenseId(null);
+              },
+            });
+          }
+        }}
+        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {deleteExpenseMutation.isPending ? "Deleting..." : "Delete"}
+    </button>
+    </div>
+  </div>
+</ModalDialog>
     </div>
   );
 }
