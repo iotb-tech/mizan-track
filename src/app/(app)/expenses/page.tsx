@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-
 import { useExpenses } from "@/hooks/useExpenses";
+import { useDeleteExpense } from "@/hooks/useDeleteExpense";
 import { useData } from "@/lib/UserDataContext";
 import { ModalDialog } from "@/component/ModalDialog";
 import { ExpenseForm } from "@/component/ExpenseForm";
+import { MonthlyBudgetCard } from "@/component/MonthlyBudgetCard";
 
 export default function ExpensesPage() {
   const { user_id } = useData();
@@ -16,30 +17,9 @@ export default function ExpensesPage() {
     error,
   } = useExpenses(user_id);
 
+  const deleteExpenseMutation = useDeleteExpense(user_id);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-
-  // Get unique categories from the existing expenses
-  const categories = Array.from(
-    new Set(expenses.map((expense) => expense.category).filter(Boolean))
-  );
-
-  // Filter expenses based on search and category
-  const filteredExpenses = expenses.filter((expense) => {
-    const search = searchTerm.toLowerCase().trim();
-
-    const matchesSearch =
-      expense.category?.toLowerCase().includes(search) ||
-      expense.note?.toLowerCase().includes(search) ||
-      expense.date?.toLowerCase().includes(search);
-
-    const matchesCategory =
-      categoryFilter === "all" ||
-      expense.category === categoryFilter;
-
-    return matchesSearch && matchesCategory;
-  });
 
   return (
     <div className="space-y-6">
@@ -63,35 +43,6 @@ export default function ExpensesPage() {
           + Add Expense
         </button>
       </div>
-
-      {/* Search & Filter */}
-      {expenses.length > 0 && (
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search expenses..."
-              className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#1976e8] focus:ring-2 focus:ring-[#1976e8]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
-            />
-          </div>
-
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#1976e8] focus:ring-2 focus:ring-[#1976e8]/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-          >
-            <option value="all">All Categories</option>
-
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
 
       {/* Expenses Content */}
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -140,6 +91,7 @@ export default function ExpensesPage() {
                   <th className="px-6 py-4">Category</th>
                   <th className="px-6 py-4">Amount</th>
                   <th className="px-6 py-4">Note</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
 
@@ -164,21 +116,11 @@ export default function ExpensesPage() {
                         ₦{expense.amount.toLocaleString()}
                       </td>
 
-                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                        {expense.note || "—"}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="px-6 py-12 text-center text-sm text-gray-500 dark:text-gray-400"
-                    >
-                      No expenses match your search or selected category.
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      {expense.note || "—"}
                     </td>
                   </tr>
-                )}
+                ))}
               </tbody>
             </table>
           </div>
@@ -203,6 +145,50 @@ export default function ExpensesPage() {
           <ExpenseForm setIsOpen={setIsModalOpen} />
         </div>
       </ModalDialog>
+
+  <ModalDialog
+  isOpen={isDeleteModalOpen}
+  setIsOpen={setIsDeleteModalOpen}
+  dismiss={true}
+>
+  <div className="flex flex-col">
+    <h2 className="text-xl font-bold text-red-500 dark:text-white">
+      Delete expense?
+    </h2>
+
+    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+      This action cannot be undone.
+    </p>
+
+    <div className="mt-6 flex justify-end gap-3">
+      <button
+        type="button"
+        onClick={() => setIsDeleteModalOpen(false)}
+        className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        disabled={deleteExpenseMutation.isPending}
+        onClick={() => {
+          if (selectedExpenseId) {
+            deleteExpenseMutation.mutate(selectedExpenseId, {
+              onSuccess: () => {
+                setIsDeleteModalOpen(false);
+                setSelectedExpenseId(null);
+              },
+            });
+          }
+        }}
+        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {deleteExpenseMutation.isPending ? "Deleting..." : "Delete"}
+    </button>
+    </div>
+  </div>
+</ModalDialog>
     </div>
   );
 }

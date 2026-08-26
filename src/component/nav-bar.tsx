@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
@@ -26,7 +27,7 @@ export function NavBar() {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <img
+          <Image
             src="/images/mizan-logo-full.png"
             alt="Mizan Track"
             width={180}

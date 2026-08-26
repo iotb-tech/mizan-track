@@ -4,11 +4,14 @@ import { CreateUpdatePass, updatePasswordSchema } from "@/lib/validation/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function UpdatePassword() {
   const supabase = createClient();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const {
     register,
@@ -34,7 +37,8 @@ export function UpdatePassword() {
       return;
     }
 
-    setError("root", { message: "✓ Password updated successfully!" });
+    setSuccessMessage("✓ Password updated! Redirecting to login...");
+    setTimeout(() => router.push("/login"), 2000);
   };
 
   return (
@@ -112,11 +116,14 @@ export function UpdatePassword() {
       </div>
 
       {errors.root && (
-        <p
-          className={`text-xs ${errors.root.message?.startsWith("✓") ? "text-green-600" : "text-red-600"}`}
-          role="alert"
-        >
+        <p className="text-xs text-red-600 font-medium" role="alert">
           {errors.root.message}
+        </p>
+      )}
+
+      {successMessage && (
+        <p className="rounded-xl bg-green-50 border border-green-200 px-3 py-2 text-xs text-green-700 font-medium" role="status">
+          {successMessage}
         </p>
       )}
 

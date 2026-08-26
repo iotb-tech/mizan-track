@@ -29,7 +29,7 @@ export function ForgotPassword() {
     const { error: authError } = await supabase.auth.resetPasswordForEmail(
       email,
       {
-        redirectTo: `${window.location.origin}/update-password`,
+        redirectTo: `${window.location.origin}/auth/callback?next=/update-password`,
       },
     );
 
