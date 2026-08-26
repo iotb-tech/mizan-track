@@ -41,4 +41,15 @@ export async function createExpense(
   return data;
 }
 
-
+export async function deleteExpense(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+  expenseId: string
+) {
+  const { error } = await supabase
+    .from("expenses")
+    .delete()
+    .eq("id", expenseId)
+    .eq("user_id", userId);
+  if (error) throw new Error(error.message);
+}
