@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import { useExpenses } from "@/hooks/useExpenses";
 import { useDeleteExpense } from "@/hooks/useDeleteExpense";
 import { useData } from "@/lib/UserDataContext";
@@ -20,6 +21,17 @@ export default function ExpensesPage() {
   const deleteExpenseMutation = useDeleteExpense(user_id);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedExpenseId, setSelectedExpenseId] = useState<string | null>(
+    null
+  );
+
+  const filteredExpenses = expenses;
+
+  const handleDeleteClick = (expenseId: string) => {
+    setSelectedExpenseId(expenseId);
+    setIsDeleteModalOpen(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -50,9 +62,7 @@ export default function ExpensesPage() {
           <div className="p-12 text-center text-gray-500 dark:text-gray-400">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#1976e8] border-r-transparent align-[-0.125em]" />
 
-            <p className="mt-3 text-sm">
-              Loading your expenses...
-            </p>
+            <p className="mt-3 text-sm">Loading your expenses...</p>
           </div>
         ) : error ? (
           <div className="p-12 text-center text-red-500">
@@ -116,11 +126,31 @@ export default function ExpensesPage() {
                         ₦{expense.amount.toLocaleString()}
                       </td>
 
-                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                      {expense.note || "—"}
+                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                        {expense.note || "—"}
+                      </td>
+
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteClick(expense.id)}
+                          className="text-sm font-semibold text-red-500 transition hover:text-red-700"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="px-6 py-12 text-center text-sm text-gray-500 dark:text-gray-400"
+                    >
+                      No expenses found.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
@@ -146,49 +176,50 @@ export default function ExpensesPage() {
         </div>
       </ModalDialog>
 
-  <ModalDialog
-  isOpen={isDeleteModalOpen}
-  setIsOpen={setIsDeleteModalOpen}
-  dismiss={true}
->
-  <div className="flex flex-col">
-    <h2 className="text-xl font-bold text-red-500 dark:text-white">
-      Delete expense?
-    </h2>
-
-    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-      This action cannot be undone.
-    </p>
-
-    <div className="mt-6 flex justify-end gap-3">
-      <button
-        type="button"
-        onClick={() => setIsDeleteModalOpen(false)}
-        className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+      {/* Delete Expense Modal */}
+      <ModalDialog
+        isOpen={isDeleteModalOpen}
+        setIsOpen={setIsDeleteModalOpen}
+        dismiss={true}
       >
-        Cancel
-      </button>
+        <div className="flex flex-col">
+          <h2 className="text-xl font-bold text-red-500 dark:text-white">
+            Delete expense?
+          </h2>
 
-      <button
-        type="button"
-        disabled={deleteExpenseMutation.isPending}
-        onClick={() => {
-          if (selectedExpenseId) {
-            deleteExpenseMutation.mutate(selectedExpenseId, {
-              onSuccess: () => {
-                setIsDeleteModalOpen(false);
-                setSelectedExpenseId(null);
-              },
-            });
-          }
-        }}
-        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {deleteExpenseMutation.isPending ? "Deleting..." : "Delete"}
-    </button>
-    </div>
-  </div>
-</ModalDialog>
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+            This action cannot be undone.
+          </p>
+
+          <div className="mt-6 flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              disabled={deleteExpenseMutation.isPending}
+              onClick={() => {
+                if (selectedExpenseId) {
+                  deleteExpenseMutation.mutate(selectedExpenseId, {
+                    onSuccess: () => {
+                      setIsDeleteModalOpen(false);
+                      setSelectedExpenseId(null);
+                    },
+                  });
+                }
+              }}
+              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {deleteExpenseMutation.isPending ? "Deleting..." : "Delete"}
+            </button>
+          </div>
+        </div>
+      </ModalDialog>
     </div>
   );
 }
