@@ -3,10 +3,11 @@
 -- Run this in your Supabase SQL Editor to enable Admin capabilities
 -- ==============================================================================
 
--- 1. Add role and is_disabled columns to profiles if they don't exist
+-- 1. Add role, is_disabled, and avatar_url columns to profiles if they don't exist
 alter table public.profiles
   add column if not exists role text not null default 'user' check (role in ('user', 'admin')),
-  add column if not exists is_disabled boolean not null default false;
+  add column if not exists is_disabled boolean not null default false,
+  add column if not exists avatar_url text;
 
 -- Backfill missing profile rows for existing auth users
 insert into public.profiles (id, email, full_name, role, is_disabled)

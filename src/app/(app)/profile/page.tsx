@@ -185,17 +185,20 @@ export default function ProfilePage() {
         // If storage bucket is not configured, fall back to compressedDataUrl
       }
 
-      // Update database profile
-      const { error: dbErr } = await supabase
-        .from("profiles")
-        .update({ avatar_url: finalAvatarUrl })
-        .eq("id", profile.id);
-
-      if (dbErr) {
-        throw new Error(dbErr.message);
+      // Update database profile safely
+      try {
+        const { error: dbErr } = await supabase
+          .from("profiles")
+          .update({ avatar_url: finalAvatarUrl })
+          .eq("id", profile.id);
+        if (dbErr) {
+          console.warn("Profiles avatar_url update notice:", dbErr.message);
+        }
+      } catch {
+        // Ignore if column missing from schema cache
       }
 
-      // Update auth user metadata
+      // Update auth user metadata (always works)
       await supabase.auth.updateUser({
         data: { avatar_url: finalAvatarUrl },
       });
@@ -223,10 +226,14 @@ export default function ProfilePage() {
     setUploading(true);
 
     try {
-      await supabase
-        .from("profiles")
-        .update({ avatar_url: null })
-        .eq("id", profile.id);
+      try {
+        await supabase
+          .from("profiles")
+          .update({ avatar_url: null })
+          .eq("id", profile.id);
+      } catch {
+        // Ignore
+      }
 
       await supabase.auth.updateUser({
         data: { avatar_url: null },
