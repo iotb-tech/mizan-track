@@ -29,7 +29,22 @@ export function MonthlyBudgetCard({
         const d = new Date(e.date);
         return d.getFullYear() === year && d.getMonth() === month;
       })
-      .reduce((sum, e) => sum + e.amount, 0);
+      .reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+  }, [expenses]);
+
+  // This week's spending (deducted from the month)
+  const thisWeekSpent = useMemo(() => {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setHours(0, 0, 0, 0);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+
+    return expenses
+      .filter((e) => {
+        const d = new Date(e.date);
+        return d >= startOfWeek && d <= now;
+      })
+      .reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
   }, [expenses]);
 
   // Budget goal — persisted in localStorage per user
@@ -122,15 +137,21 @@ export function MonthlyBudgetCard({
         </div>
       ) : (
         <>
-          <h3 className="mt-2 text-xl font-bold text-gray-900 dark:text-white">
-            {formatCurrency(monthlySpent)}
+          <div className="mt-2 flex items-baseline justify-between">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+              {budget > 0 ? formatCurrency(remaining) : formatCurrency(monthlySpent)}
+              {budget > 0 && (
+                <span className="text-xs font-normal text-gray-500 dark:text-gray-400">
+                  {" "}remaining
+                </span>
+              )}
+            </h3>
             {budget > 0 && (
-              <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                {" "}
-                / {formatCurrency(budget)}
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                Budget: {formatCurrency(budget)}
               </span>
             )}
-          </h3>
+          </div>
 
           {budget > 0 ? (
             <>
@@ -142,17 +163,23 @@ export function MonthlyBudgetCard({
               </div>
 
               <div className="mt-2 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                <span>{pct}% used</span>
+                <span>{pct}% spent ({formatCurrency(monthlySpent)})</span>
                 <span>
                   {remaining >= 0
                     ? `${formatCurrency(remaining)} left`
                     : `${formatCurrency(Math.abs(remaining))} over budget`}
                 </span>
               </div>
+
+              {thisWeekSpent > 0 && (
+                <p className="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
+                  −{formatCurrency(thisWeekSpent)} deducted this week
+                </p>
+              )}
             </>
           ) : (
             <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
-              Tap &quot;Set Budget&quot; to track progress.
+              Tap &quot;Set Budget&quot; to track monthly deductions.
             </p>
           )}
 

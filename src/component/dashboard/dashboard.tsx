@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useMemo } from "react";
 import { useData } from "@/lib/UserDataContext";
 import { useHabits } from "@/hooks/useHabits";
 import { BarChart, Chartdata } from "@/app/(app)/reports/charts";
@@ -18,9 +18,24 @@ export default function Dashboard({ children }: { children: ReactNode }) {
 
   const { data: expenses = [], isLoading, error } = useExpenses(user_id);
 
-  const [total, setTotal] = useState(0);
+  const [, setChartTotal] = useState(0);
   const [islastWeek, setislastWeek] = useState("this_week");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // This week's spending
+  const thisWeekSpent = useMemo(() => {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setHours(0, 0, 0, 0);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+
+    return expenses
+      .filter((e) => {
+        const d = new Date(e.date);
+        return d >= startOfWeek && d <= now;
+      })
+      .reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+  }, [expenses]);
 
   const maxStreak =
     habits.length > 0 ? Math.max(...habits.map((h) => h.streak), 0) : 0;
@@ -125,8 +140,12 @@ export default function Dashboard({ children }: { children: ReactNode }) {
             </p>
 
             <h3 className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
-              ₦{total}
+              ₦{thisWeekSpent.toLocaleString()}
             </h3>
+
+            <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+              −₦{thisWeekSpent.toLocaleString()} deducted from monthly budget
+            </p>
           </div>
 
           {/* Monthly Budget */}
@@ -160,7 +179,7 @@ export default function Dashboard({ children }: { children: ReactNode }) {
               ""
             ) : (
               <div className="mt-5 rounded-lg bg-blue-50 px-4 py-3 text-sm text-gray-600 transition-colors dark:bg-blue-950/40 dark:text-gray-300">
-                You spent <strong>₦{total}</strong> this week.
+                You spent <strong>₦{thisWeekSpent.toLocaleString()}</strong> this week.
               </div>
             )}
           </div>
@@ -265,7 +284,7 @@ export default function Dashboard({ children }: { children: ReactNode }) {
 
           {/* Category Overview */}
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-900">
-            <Chartdata setTotal={setTotal} />
+            <Chartdata setTotal={setChartTotal} />
           </div>
         </section>
 
