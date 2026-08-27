@@ -37,8 +37,7 @@ export function LoginForm() {
       setError("root", { message: authError.message });
       return;
     }
-    router.refresh();
-    router.push("/dashboard");
+    window.location.href = "/dashboard";
   };
 
   return (

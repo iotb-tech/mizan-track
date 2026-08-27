@@ -15,23 +15,13 @@ const PUBLIC_PATHS = [
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
-  // Guard against HTTP 431: Purge any oversized legacy cookies (> 1500 chars)
-  const incomingCookies = request.cookies.getAll();
-  incomingCookies.forEach((c) => {
-    if (c.value && c.value.length > 1500) {
-      response.cookies.delete(c.name);
-    }
-  });
-
   const supabase = createServerClient(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
-          return request.cookies
-            .getAll()
-            .filter((c) => !c.value || c.value.length <= 1500);
+          return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
