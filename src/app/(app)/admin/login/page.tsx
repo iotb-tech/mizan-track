@@ -1,16 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const MASTER_ADMIN_DEFAULT_PASS = "Admin@MizanTrack2026!";
 
 export default function AdminLoginPage() {
-  const router = useRouter();
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showMasterHint, setShowMasterHint] = useState(false);
+  const [password, setPassword] = useState(MASTER_ADMIN_DEFAULT_PASS);
+  const [showPassword, setShowPassword] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -47,11 +44,6 @@ export default function AdminLoginPage() {
     }
   }
 
-  function handleAutoFillMaster() {
-    setPassword(MASTER_ADMIN_DEFAULT_PASS);
-    setError("");
-  }
-
   return (
     <div className="flex min-h-[65vh] items-center justify-center p-4">
       <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl transition-all dark:border-gray-700 dark:bg-gray-900 sm:p-8">
@@ -64,7 +56,7 @@ export default function AdminLoginPage() {
               Administrator Verification
             </h1>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Enter the Master Admin Password to unlock portal access.
+              Master Admin access verification portal.
             </p>
           </div>
         </div>
@@ -99,7 +91,7 @@ export default function AdminLoginPage() {
                 }}
                 placeholder="Enter master admin password..."
                 autoFocus
-                className="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 pr-10 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#1976e8] focus:ring-2 focus:ring-[#1976e8]/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                className="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 pr-10 text-sm font-mono text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#1976e8] focus:ring-2 focus:ring-[#1976e8]/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
               />
 
               <button
@@ -128,42 +120,28 @@ export default function AdminLoginPage() {
             )}
           </div>
 
-          {/* Master Admin Credential Helper */}
-          <div className="rounded-xl border border-amber-200/80 bg-amber-50/60 p-3.5 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
+          {/* Master Admin Default Password Box */}
+          <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-3.5 text-xs text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200">
             <div className="flex items-center justify-between">
               <span className="font-bold flex items-center gap-1.5">
-                🔑 Master Admin Credential
+                🔑 Default Master Password:
               </span>
               <button
                 type="button"
-                onClick={() => setShowMasterHint(!showMasterHint)}
-                className="font-medium text-[#1976e8] hover:underline dark:text-blue-400"
+                onClick={() => {
+                  setPassword(MASTER_ADMIN_DEFAULT_PASS);
+                  setError("");
+                }}
+                className="font-semibold text-[#1976e8] hover:underline dark:text-blue-400"
               >
-                {showMasterHint ? "Hide Key" : "Reveal Key"}
+                Reset Default
               </button>
             </div>
 
-            {showMasterHint ? (
-              <div className="mt-2.5 pt-2 border-t border-amber-200/60 dark:border-amber-900/50">
-                <p className="text-[11px] text-amber-800 dark:text-amber-300">
-                  Default Master Password:
-                </p>
-                <div className="mt-1 flex items-center justify-between rounded-lg bg-white px-2.5 py-1.5 font-mono text-xs font-semibold text-gray-900 shadow-xs dark:bg-gray-800 dark:text-amber-200">
-                  <code>{MASTER_ADMIN_DEFAULT_PASS}</code>
-                  <button
-                    type="button"
-                    onClick={handleAutoFillMaster}
-                    className="ml-2 rounded bg-[#1976e8] px-2 py-0.5 text-[10px] font-bold text-white hover:bg-[#0f4788] transition"
-                  >
-                    Auto Fill
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <p className="mt-1 text-[11px] text-amber-700 dark:text-amber-300/80">
-                Click &quot;Reveal Key&quot; to view or auto-fill the default master admin credentials.
-              </p>
-            )}
+            <div className="mt-2 flex items-center justify-between rounded-lg bg-white px-3 py-2 font-mono text-xs font-bold text-gray-900 shadow-xs dark:bg-gray-800 dark:text-amber-200">
+              <code>{MASTER_ADMIN_DEFAULT_PASS}</code>
+              <span className="text-[10px] font-normal text-gray-400">Pre-filled</span>
+            </div>
           </div>
 
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
