@@ -95,7 +95,7 @@ export function LogoM() {
   );
 }
 
-export function Logo(_props?: LogoProp) {
+export function Logo({}: LogoProp) {
   return (
     <Image
       src="/images/mizan-logo-full.png"
@@ -127,9 +127,7 @@ export function Footer() {
 
   return (
     <div className="border-t border-neutral-200 bg-neutral-600 text-neutral-50 dark:border-neutral-700 dark:bg-neutral-950">
-      <p className="mx-auto py-5 text-center">
-        &copy; Copyright {year}
-      </p>
+      <p className="mx-auto py-5 text-center">&copy; Copyright {year}</p>
     </div>
   );
 }

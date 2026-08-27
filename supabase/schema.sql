@@ -12,7 +12,7 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now()
 );
 
-create or replace function public.handle_new_user()
+create or replace functiogit n public.handle_new_user()
 returns trigger
 language plpgsql
 security definer

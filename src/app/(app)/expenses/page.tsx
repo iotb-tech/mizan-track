@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useExpenses } from "@/hooks/useExpenses";
+import { useDeleteExpense } from "@/hooks/useDeleteExpense";
 import { useData } from "@/lib/UserDataContext";
 import { ModalDialog } from "@/component/ModalDialog";
 import { ExpenseForm } from "@/component/ExpenseForm";
@@ -16,11 +17,9 @@ export default function ExpensesPage() {
     error,
   } = useExpenses(user_id);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const deleteExpenseMutation = useDeleteExpense(user_id);
 
-  const totalSpent = useMemo(() => {
-    return expenses.reduce((sum, e) => sum + e.amount, 0);
-  }, [expenses]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -39,44 +38,11 @@ export default function ExpensesPage() {
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center justify-center rounded-lg bg-[#1976e8] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1267cf] shadow-sm"
+          className="inline-flex items-center justify-center rounded-lg bg-[#1976e8] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1267cf]"
         >
           + Add Expense
         </button>
       </div>
-
-      {/* Summary Cards with Monthly Budget */}
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <MonthlyBudgetCard
-          expenses={expenses}
-          userId={user_id}
-          className="sm:col-span-2 lg:col-span-1"
-        />
-
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-900">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Total Spent (All Time)
-          </p>
-          <h3 className="mt-2 text-xl font-bold text-gray-900 dark:text-white">
-            ₦{totalSpent.toLocaleString("en-NG")}
-          </h3>
-          <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
-            Across {expenses.length} recorded expense{expenses.length === 1 ? "" : "s"}
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-900">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Total Entries
-          </p>
-          <h3 className="mt-2 text-xl font-bold text-gray-900 dark:text-white">
-            {expenses.length}
-          </h3>
-          <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
-            Tracked in your account
-          </p>
-        </div>
-      </section>
 
       {/* Expenses Content */}
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -125,28 +91,30 @@ export default function ExpensesPage() {
                   <th className="px-6 py-4">Category</th>
                   <th className="px-6 py-4">Amount</th>
                   <th className="px-6 py-4">Note</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
 
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                {expenses.map((expense) => (
-                  <tr
-                    key={expense.id}
-                    className="transition hover:bg-gray-50/60 dark:hover:bg-gray-700/40"
-                  >
-                    <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                      {expense.date}
-                    </td>
+                {filteredExpenses.length > 0 ? (
+                  filteredExpenses.map((expense) => (
+                    <tr
+                      key={expense.id}
+                      className="transition hover:bg-gray-50/60 dark:hover:bg-gray-700/40"
+                    >
+                      <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                        {expense.date}
+                      </td>
 
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-[#1976e8] dark:bg-blue-950/40">
-                        {expense.category}
-                      </span>
-                    </td>
+                      <td className="px-6 py-4">
+                        <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-[#1976e8] dark:bg-blue-950/40">
+                          {expense.category}
+                        </span>
+                      </td>
 
-                    <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
-                      ₦{expense.amount.toLocaleString()}
-                    </td>
+                      <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
+                        ₦{expense.amount.toLocaleString()}
+                      </td>
 
                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                       {expense.note || "—"}
@@ -177,6 +145,50 @@ export default function ExpensesPage() {
           <ExpenseForm setIsOpen={setIsModalOpen} />
         </div>
       </ModalDialog>
+
+  <ModalDialog
+  isOpen={isDeleteModalOpen}
+  setIsOpen={setIsDeleteModalOpen}
+  dismiss={true}
+>
+  <div className="flex flex-col">
+    <h2 className="text-xl font-bold text-red-500 dark:text-white">
+      Delete expense?
+    </h2>
+
+    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+      This action cannot be undone.
+    </p>
+
+    <div className="mt-6 flex justify-end gap-3">
+      <button
+        type="button"
+        onClick={() => setIsDeleteModalOpen(false)}
+        className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        disabled={deleteExpenseMutation.isPending}
+        onClick={() => {
+          if (selectedExpenseId) {
+            deleteExpenseMutation.mutate(selectedExpenseId, {
+              onSuccess: () => {
+                setIsDeleteModalOpen(false);
+                setSelectedExpenseId(null);
+              },
+            });
+          }
+        }}
+        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {deleteExpenseMutation.isPending ? "Deleting..." : "Delete"}
+    </button>
+    </div>
+  </div>
+</ModalDialog>
     </div>
   );
 }
