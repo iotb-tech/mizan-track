@@ -9,23 +9,25 @@ create table if not exists public.profiles (
   full_name text,
   role text not null default 'user' check (role in ('user', 'admin')),
   is_disabled boolean not null default false,
+  avatar_url text,
   created_at timestamptz not null default now()
 );
 
-create or replace functiogit n public.handle_new_user()
+create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer
 set search_path = ''
 as $$
 begin
-  insert into public.profiles (id, email, full_name, role, is_disabled)
+  insert into public.profiles (id, email, full_name, role, is_disabled, avatar_url)
   values (
     new.id,
     new.email,
     coalesce(new.raw_user_meta_data ->> 'full_name', split_part(new.email, '@', 1)),
     coalesce(new.raw_user_meta_data ->> 'role', 'user'),
-    false
+    false,
+    new.raw_user_meta_data ->> 'avatar_url'
   )
   on conflict (id) do nothing;
 

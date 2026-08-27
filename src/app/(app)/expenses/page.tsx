@@ -6,7 +6,7 @@ import { useDeleteExpense } from "@/hooks/useDeleteExpense";
 import { useData } from "@/lib/UserDataContext";
 import { ModalDialog } from "@/component/ModalDialog";
 import { ExpenseForm } from "@/component/ExpenseForm";
-import { MonthlyBudgetCard } from "@/component/MonthlyBudgetCard";
+
 
 export default function ExpensesPage() {
   const { user_id } = useData();
@@ -20,6 +20,8 @@ export default function ExpensesPage() {
   const deleteExpenseMutation = useDeleteExpense(user_id);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedExpenseId, setSelectedExpenseId] = useState<string | null>(null);
 
   return (
     <div className="space-y-6">
@@ -96,8 +98,8 @@ export default function ExpensesPage() {
               </thead>
 
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                {filteredExpenses.length > 0 ? (
-                  filteredExpenses.map((expense) => (
+                {expenses.length > 0 ? (
+                  expenses.map((expense) => (
                     <tr
                       key={expense.id}
                       className="transition hover:bg-gray-50/60 dark:hover:bg-gray-700/40"
@@ -119,8 +121,27 @@ export default function ExpensesPage() {
                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                       {expense.note || "—"}
                     </td>
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedExpenseId(expense.id);
+                          setIsDeleteModalOpen(true);
+                        }}
+                        className="text-sm font-medium text-red-600 hover:text-red-900 dark:text-red-500 dark:hover:text-red-400"
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
-                ))}
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                    No expenses found matching your filters.
+                  </td>
+                </tr>
+              )}
               </tbody>
             </table>
           </div>
