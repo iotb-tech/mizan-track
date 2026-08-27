@@ -113,22 +113,52 @@ export type Database = {
       };
       profiles: {
         Row: {
+          avatar_url: string | null;
           created_at: string;
           email: string;
           full_name: string | null;
           id: string;
+          is_disabled: boolean;
+          role: "user" | "admin";
         };
         Insert: {
+          avatar_url?: string | null;
           created_at?: string;
           email: string;
           full_name?: string | null;
           id: string;
+          is_disabled?: boolean;
+          role?: "user" | "admin";
         };
         Update: {
+          avatar_url?: string | null;
           created_at?: string;
           email?: string;
           full_name?: string | null;
           id?: string;
+          is_disabled?: boolean;
+          role?: "user" | "admin";
+        };
+        Relationships: [];
+      };
+      system_settings: {
+        Row: {
+          description: string | null;
+          key: string;
+          updated_at: string;
+          value: string;
+        };
+        Insert: {
+          description?: string | null;
+          key: string;
+          updated_at?: string;
+          value: string;
+        };
+        Update: {
+          description?: string | null;
+          key?: string;
+          updated_at?: string;
+          value?: string;
         };
         Relationships: [];
       };
@@ -280,6 +310,9 @@ export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type Habit = Database["public"]["Tables"]["habits"]["Row"];
 export type HabitLogs = Database["public"]["Tables"]["habits_log"]["Row"];
 export type Expense = Database["public"]["Tables"]["expenses"]["Row"];
+export type SystemSetting = Database["public"]["Tables"]["system_settings"]["Row"];
+
+export type UserRole = "user" | "admin";
 
 export type Frequency_type = Database["public"]["Enums"]["frequency_type"];
 
@@ -298,4 +331,31 @@ export type HabitWithStats = Habit & {
   doneToday: boolean;
   recentHistory: boolean[]; // last 7 days status (from 6 days ago to today)
   habits_log?: HabitLogs[];
+};
+
+export type AdminUserSummary = {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: UserRole;
+  is_disabled: boolean;
+  created_at: string;
+  habits_count: number;
+  expenses_count: number;
+  total_expenses_amount: number;
+  best_streak: number;
+};
+
+export type AdminUserDetail = {
+  profile: Profile;
+  habits: HabitWithStats[];
+  expenses: Expense[];
+  metrics: {
+    totalHabits: number;
+    completedToday: number;
+    maxStreak: number;
+    totalSpent: number;
+    monthlySpent: number;
+    expensesCount: number;
+  };
 };

@@ -6,6 +6,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
+import { useData } from "@/lib/UserDataContext";
+
 type DashboardSidebarProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -28,6 +30,7 @@ export default function DashboardSidebar({
   const router = useRouter();
   const supabase = createClient();
   const queryClient = useQueryClient();
+  const { isAdmin } = useData();
 
   async function logOut() {
     await supabase.auth.signOut();
@@ -65,7 +68,7 @@ export default function DashboardSidebar({
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6">
+        <nav className="flex-1 px-4 py-6 overflow-y-auto">
           <div className="space-y-2">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
@@ -89,6 +92,34 @@ export default function DashboardSidebar({
                 </Link>
               );
             })}
+
+            {/* Admin Portal Entry (Only visible to verified Admins) */}
+            {isAdmin && (
+              <div className="pt-4 mt-4 border-t border-white/10">
+                <p className="px-4 text-[10px] font-bold uppercase tracking-wider text-blue-200/80 mb-2">
+                  Administration
+                </p>
+                <Link
+                  href="/admin"
+                  onClick={onClose}
+                  className={`flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition ${
+                    pathname.startsWith("/admin")
+                      ? "bg-amber-500 text-white shadow-sm font-semibold"
+                      : "text-amber-300 hover:bg-white/10"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-5 w-5 items-center justify-center text-sm">
+                      🛡️
+                    </span>
+                    <span>Admin Portal</span>
+                  </div>
+                  <span className="rounded bg-amber-400/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-200 uppercase">
+                    Admin
+                  </span>
+                </Link>
+              </div>
+            )}
           </div>
         </nav>
 

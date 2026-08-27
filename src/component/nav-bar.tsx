@@ -24,7 +24,6 @@ export function NavBar() {
   return (
     <nav className="w-full border-b border-neutral-200 bg-white dark:border-gray-800 dark:bg-gray-950">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <Image
@@ -32,7 +31,7 @@ export function NavBar() {
             alt="Mizan Track"
             width={180}
             height={60}
-            className="object-contain h-auto w-[140px] sm:w-[180px]"
+            className="object-contain h-auto w-35 sm:w-45"
           />
         </Link>
 

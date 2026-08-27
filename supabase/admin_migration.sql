@@ -1,68 +1,29 @@
 -- ==============================================================================
--- MIZAN TRACK: COMPLETE DATABASE SCHEMA
+-- MIZAN TRACK: ADMIN MIGRATION SCRIPT
+-- Run this in your Supabase SQL Editor to enable Admin capabilities
 -- ==============================================================================
 
--- 1. Profiles Table
-create table if not exists public.profiles (
-  id uuid primary key references auth.users (id) on delete cascade,
-  email text not null,
-  full_name text,
-  role text not null default 'user' check (role in ('user', 'admin')),
-  is_disabled boolean not null default false,
-  created_at timestamptz not null default now()
-);
+-- 1. Add role and is_disabled columns to profiles if they don't exist
+alter table public.profiles
+  add column if not exists role text not null default 'user' check (role in ('user', 'admin')),
+  add column if not exists is_disabled boolean not null default false;
 
-create or replace function public.handle_new_user()
-returns trigger
-language plpgsql
-security definer
-set search_path = ''
-as $$
-begin
-  insert into public.profiles (id, email, full_name, role, is_disabled)
-  values (
-    new.id,
-    new.email,
-    coalesce(new.raw_user_meta_data ->> 'full_name', split_part(new.email, '@', 1)),
-    coalesce(new.raw_user_meta_data ->> 'role', 'user'),
-    false
-  )
-  on conflict (id) do nothing;
+-- Backfill missing profile rows for existing auth users
+insert into public.profiles (id, email, full_name, role, is_disabled)
+select 
+  id,
+  coalesce(email, 'user@example.com'),
+  coalesce(raw_user_meta_data->>'full_name', split_part(email, '@', 1)),
+  'user',
+  false
+from auth.users
+on conflict (id) do update
+set is_disabled = false where public.profiles.is_disabled is null;
 
-  return new;
-end;
-$$;
+update public.profiles set is_disabled = false where is_disabled is null;
+update public.profiles set role = 'user' where role is null;
 
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function public.handle_new_user();
-
--- 2. Habits & Logs
-create type frequency_type as enum ('daily', 'specific_days', 'weekly_count');
-
-create table if not exists public.habits (
-  id uuid primary key default gen_random_uuid(),
-  name text not null check (char_length(name) between 3 and 120),
-  user_id uuid not null references public.profiles (id) on delete cascade,
-  frequency_type frequency_type not null,
-  category text check (char_length(category) between 3 and 120),
-  days_of_week smallint[],
-  target_count smallint,
-  created_at timestamptz not null default now()
-);
-
-create table if not exists public.habits_log (
-  id uuid primary key default gen_random_uuid(),
-  habit_id uuid not null references public.habits (id) on delete cascade,
-  log_date date not null,
-  completed boolean not null default false,
-  unique (habit_id, log_date)
-);
-
-create index if not exists habits_user_id_idx on public.habits (user_id);
-
--- 3. Expenses Table
+-- 2. Create expenses table if not already tracked in schema
 create table if not exists public.expenses (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles (id) on delete cascade,
@@ -74,8 +35,9 @@ create table if not exists public.expenses (
 );
 
 create index if not exists expenses_user_id_idx on public.expenses (user_id);
+alter table public.expenses enable row level security;
 
--- 4. System Settings Table
+-- 3. Create system_settings table for admin password and system parameters
 create table if not exists public.system_settings (
   key text primary key,
   value text not null,
@@ -83,22 +45,20 @@ create table if not exists public.system_settings (
   updated_at timestamptz not null default now()
 );
 
--- Default admin password: Admin@MizanTrack2026!
+alter table public.system_settings enable row level security;
+
+-- Initial default admin password: Admin@MizanTrack2026!
+-- SHA-256 hash of "Admin@MizanTrack2026!"
 insert into public.system_settings (key, value, description)
 values (
   'admin_password_hash',
   '15d6ef77c23d37b18d48f5ad4c6d8286ab65ad0b6f42eb9da208000d1e588464',
   'Hashed master admin verification password'
 )
-on conflict (key) do nothing;
+on conflict (key) do update
+set value = '15d6ef77c23d37b18d48f5ad4c6d8286ab65ad0b6f42eb9da208000d1e588464';
 
--- 5. Row Level Security & Helper Functions
-alter table public.profiles enable row level security;
-alter table public.habits enable row level security;
-alter table public.habits_log enable row level security;
-alter table public.expenses enable row level security;
-alter table public.system_settings enable row level security;
-
+-- 4. Helper function to check if current user is an active admin
 create or replace function public.is_admin()
 returns boolean
 language sql
@@ -115,22 +75,7 @@ as $$
   );
 $$;
 
-create or replace function public.owns_habits(h_habit_id uuid)
-returns boolean
-language sql
-security definer
-stable
-set search_path = ''
-as $$
-  select exists (
-    select 1
-    from public.habits h
-    where h.id = h_habit_id
-      and h.user_id = (select auth.uid())
-  );
-$$;
-
--- RLS: Profiles
+-- 5. Update RLS Policies for Profiles
 drop policy if exists "profiles: read own" on public.profiles;
 drop policy if exists "profiles: read own or admin" on public.profiles;
 create policy "profiles: read own or admin"
@@ -149,13 +94,14 @@ create policy "profiles: delete admin"
   on public.profiles for delete
   using (public.is_admin());
 
--- RLS: Habits (Admin has read-only access to all habits)
+-- 6. Update RLS Policies for Habits
 drop policy if exists "habits: read own" on public.habits;
 drop policy if exists "habits: read own or admin" on public.habits;
 create policy "habits: read own or admin"
   on public.habits for select
   using ((select auth.uid()) = user_id or public.is_admin());
 
+-- Notice: Admins can READ all habits, but only own users can INSERT/UPDATE/DELETE (read-only for admin)
 drop policy if exists "habits: insert own" on public.habits;
 create policy "habits: insert own"
   on public.habits for insert
@@ -171,7 +117,7 @@ create policy "habits: delete own"
   on public.habits for delete
   using ((select auth.uid()) = user_id);
 
--- RLS: Habits Log (Admin has read-only access to all habit logs)
+-- 7. Update RLS Policies for Habits Log
 drop policy if exists "habits_log: read own" on public.habits_log;
 drop policy if exists "habits_log: read own or admin" on public.habits_log;
 create policy "habits_log: read own or admin"
@@ -193,7 +139,7 @@ create policy "habits_log: delete own"
   on public.habits_log for delete
   using (public.owns_habits(habit_id));
 
--- RLS: Expenses (Admin has read-only access to all expenses)
+-- 8. Update RLS Policies for Expenses
 drop policy if exists "expenses: read own or admin" on public.expenses;
 create policy "expenses: read own or admin"
   on public.expenses for select
@@ -214,7 +160,7 @@ create policy "expenses: delete own"
   on public.expenses for delete
   using ((select auth.uid()) = user_id);
 
--- RLS: System Settings
+-- 9. Update RLS Policies for System Settings
 drop policy if exists "system_settings: read admin" on public.system_settings;
 create policy "system_settings: read admin"
   on public.system_settings for select
@@ -225,8 +171,3 @@ create policy "system_settings: update admin"
   on public.system_settings for update
   using (public.is_admin())
   with check (public.is_admin());
-
--- Realtime subscriptions
-alter publication supabase_realtime add table public.habits;
-alter publication supabase_realtime add table public.habits_log;
-alter publication supabase_realtime add table public.expenses;

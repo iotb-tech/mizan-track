@@ -3,6 +3,7 @@
 import { useData } from "@/lib/UserDataContext";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "@/component/ThemeToggle";
+import Image from "next/image";
 
 type DashboardHeaderProps = {
   onMenuClick: () => void;
@@ -15,14 +16,18 @@ const routeTitles: Record<string, string> = {
   "/reports": "Reports",
   "/profile": "Profile",
   "/settings": "Settings",
+  "/admin": "Admin Portal",
+  "/admin/settings": "Admin Security & Password",
 };
 
 export default function DashboardHeader({
   onMenuClick,
 }: DashboardHeaderProps) {
-  const { userName } = useData();
+  const { userName, isAdmin, avatarUrl } = useData();
   const pathname = usePathname();
-  const currentTitle = routeTitles[pathname] || "Dashboard";
+  const currentTitle =
+    routeTitles[pathname] ||
+    (pathname.startsWith("/admin/users/") ? "User Record Audit" : "Dashboard");
 
   return (
     <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-900 sm:px-6 lg:px-8">
@@ -47,15 +52,33 @@ export default function DashboardHeader({
 
       {/* Right side */}
       <div className="flex items-center gap-3">
-        <span className="text-sm font-semibold text-gray-800 transition-colors dark:text-gray-200 max-md:text-xs">
-          {userName}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm font-semibold text-gray-800 transition-colors dark:text-gray-200 max-md:text-xs">
+            {userName}
+          </span>
+          {isAdmin && (
+            <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-950/80 dark:text-amber-300">
+              Admin
+            </span>
+          )}
+        </div>
 
         <ThemeToggle />
 
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-bold text-[#0f4788] dark:bg-blue-900/50 dark:text-blue-200">
-          {(userName || "U").charAt(0).toUpperCase()}
-        </div>
+        {avatarUrl ? (
+          <Image
+            src={avatarUrl}
+            alt={userName}
+            width={40}
+            height={40}
+            unoptimized
+            className="h-10 w-10 rounded-full border border-gray-200 object-cover shadow-sm dark:border-gray-700"
+          />
+        ) : (
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-bold text-[#0f4788] dark:bg-blue-900/50 dark:text-blue-200">
+            {(userName || "U").charAt(0).toUpperCase()}
+          </div>
+        )}
       </div>
     </header>
   );

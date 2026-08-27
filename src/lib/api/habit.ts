@@ -100,12 +100,38 @@ export async function fetchHabits(
   });
 }
 
+async function ensureProfile(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+) {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user && user.id === userId) {
+      await supabase.from("profiles").upsert(
+        {
+          id: userId,
+          email: user.email || "",
+          full_name:
+            user.user_metadata?.name || user.email?.split("@")[0] || "User",
+          role: "user",
+          is_disabled: false,
+        },
+        { onConflict: "id" },
+      );
+    }
+  } catch {
+    // Ignore upsert errors
+  }
+}
+
 export async function createHabit(
   supabase: SupabaseClient<Database>,
   userId: string,
   input: CreateHabitInput,
 ): Promise<Habit> {
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("habits")
     .insert({
       user_id: userId,
@@ -116,8 +142,24 @@ export async function createHabit(
     .select()
     .single();
 
+  if (error && error.message.includes("habits_user_id_fkey")) {
+    await ensureProfile(supabase, userId);
+    const retry = await supabase
+      .from("habits")
+      .insert({
+        user_id: userId,
+        name: input.name,
+        category: input.category || null,
+        frequency_type: input.frequency || "daily",
+      })
+      .select()
+      .single();
+    data = retry.data;
+    error = retry.error;
+  }
+
   if (error) throw new Error(error.message);
-  return data;
+  return data!;
 }
 
 export async function toggleHabitLog(
