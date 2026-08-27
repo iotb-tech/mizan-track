@@ -4,6 +4,7 @@ import { useData } from "@/lib/UserDataContext";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "@/component/ThemeToggle";
 import Image from "next/image";
+import Link from "next/link";
 
 type DashboardHeaderProps = {
   onMenuClick: () => void;
@@ -65,20 +66,26 @@ export default function DashboardHeader({
 
         <ThemeToggle />
 
-        {avatarUrl ? (
-          <Image
-            src={avatarUrl}
-            alt={userName}
-            width={40}
-            height={40}
-            unoptimized
-            className="h-10 w-10 rounded-full border border-gray-200 object-cover shadow-sm dark:border-gray-700"
-          />
-        ) : (
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-bold text-[#0f4788] dark:bg-blue-900/50 dark:text-blue-200">
-            {(userName || "U").charAt(0).toUpperCase()}
-          </div>
-        )}
+        <Link
+          href="/profile"
+          className="group relative transition hover:opacity-90"
+          title="View & Edit Profile"
+        >
+          {avatarUrl ? (
+            <Image
+              src={avatarUrl}
+              alt={userName}
+              width={40}
+              height={40}
+              unoptimized
+              className="h-10 w-10 rounded-full border border-gray-200 object-cover shadow-sm transition group-hover:ring-2 group-hover:ring-[#1976e8] dark:border-gray-700"
+            />
+          ) : (
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-bold text-[#0f4788] transition group-hover:ring-2 group-hover:ring-[#1976e8] dark:bg-blue-900/50 dark:text-blue-200">
+              {(userName || "U").charAt(0).toUpperCase()}
+            </div>
+          )}
+        </Link>
       </div>
     </header>
   );

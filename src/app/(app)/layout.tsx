@@ -17,33 +17,52 @@ export default async function AppLayout({
 
   const { id: user_id, user_metadata } = user;
 
-  // Fetch user profile from database to get role, disabled status, and avatar
-  let { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name, role, is_disabled, avatar_url")
-    .eq("id", user_id)
-    .maybeSingle();
-
-  // If user profile record does not exist in public.profiles, create it
-  if (!profile) {
-    const { data: newProfile } = await supabase
+  // Fetch user profile from database with safe fallback
+  let profile = null;
+  try {
+    const { data, error } = await supabase
       .from("profiles")
-      .upsert(
-        {
-          id: user_id,
-          email: user.email || "",
-          full_name:
-            user_metadata?.name || user.email?.split("@")[0] || "User",
-          role: "user",
-          is_disabled: false,
-          avatar_url: user_metadata?.avatar_url || null,
-        },
-        { onConflict: "id" }
-      )
       .select("full_name, role, is_disabled, avatar_url")
-      .single();
+      .eq("id", user_id)
+      .maybeSingle();
 
-    profile = newProfile;
+    if (!error && data) {
+      profile = data;
+    } else {
+      const fallback = await supabase
+        .from("profiles")
+        .select("full_name, role, is_disabled")
+        .eq("id", user_id)
+        .maybeSingle();
+      profile = fallback.data ? { ...fallback.data, avatar_url: null } : null;
+    }
+  } catch {
+    profile = null;
+  }
+
+  // If user profile record does not exist in public.profiles, create it safely
+  if (!profile) {
+    try {
+      const { data: newProfile } = await supabase
+        .from("profiles")
+        .upsert(
+          {
+            id: user_id,
+            email: user.email || "",
+            full_name:
+              user_metadata?.name || user.email?.split("@")[0] || "User",
+            role: "user",
+            is_disabled: false,
+          },
+          { onConflict: "id" }
+        )
+        .select("full_name, role, is_disabled")
+        .maybeSingle();
+
+      profile = newProfile ? { ...newProfile, avatar_url: null } : null;
+    } catch {
+      // Ignore
+    }
   }
 
   // If user account has been disabled by an admin, redirect to disabled notice

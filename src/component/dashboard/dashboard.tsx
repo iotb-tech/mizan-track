@@ -10,9 +10,10 @@ import { useExpenses } from "@/hooks/useExpenses";
 import { ExpenseForm } from "../ExpenseForm";
 import { ModalDialog } from "../ModalDialog";
 import { MonthlyBudgetCard } from "@/component/MonthlyBudgetCard";
+import Image from "next/image";
 
 export default function Dashboard({ children }: { children: ReactNode }) {
-  const { user_id, userName } = useData();
+  const { user_id, userName, avatarUrl } = useData();
   const { data: habits = [] } = useHabits(user_id);
 
   const { data: expenses = [], isLoading, error } = useExpenses(user_id);
@@ -33,17 +34,46 @@ export default function Dashboard({ children }: { children: ReactNode }) {
   return (
     <>
       <div className="space-y-6">
-        {/* Dashboard heading */}
+        {/* Dashboard heading with Profile Picture */}
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 transition-colors dark:text-white sm:text-3xl">
-              Welcome back, {userName.split(" ")[0] ?? ""}
-            </h1>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/profile"
+              className="group relative shrink-0"
+              title="Go to Profile"
+            >
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt={userName}
+                  width={60}
+                  height={60}
+                  unoptimized
+                  className="h-14 w-14 sm:h-16 sm:w-16 rounded-full border-2 border-[#1976e8]/40 object-cover shadow-md transition group-hover:scale-105 group-hover:border-[#1976e8]"
+                />
+              ) : (
+                <div className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-gradient-to-br from-[#1976e8] to-[#0f4788] text-xl sm:text-2xl font-bold text-white shadow-md transition group-hover:scale-105">
+                  {(userName || "U").charAt(0).toUpperCase()}
+                </div>
+              )}
+              <span
+                className="absolute bottom-0 right-0 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-emerald-500 text-[9px] sm:text-[10px] text-white ring-2 ring-white dark:ring-gray-900"
+                title="Active"
+              >
+                ✓
+              </span>
+            </Link>
 
-            <p className="mt-1 text-sm text-gray-500 transition-colors dark:text-gray-400">
-              Here&apos;s what&apos;s happening with your consistency and
-              spending.
-            </p>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 transition-colors dark:text-white sm:text-3xl">
+                Welcome back, {userName.split(" ")[0] ?? ""}
+              </h1>
+
+              <p className="mt-1 text-sm text-gray-500 transition-colors dark:text-gray-400">
+                Here&apos;s what&apos;s happening with your consistency and
+                spending.
+              </p>
+            </div>
           </div>
         </div>
 

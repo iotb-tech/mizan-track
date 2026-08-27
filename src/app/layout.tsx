@@ -1,26 +1,17 @@
 import { Providers } from "./providers";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 const inter = Inter({
   subsets: ["latin"],
+  display: "swap",
   variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  title: "Consistency Tracker",
-  description: "Consistency tracker for fellows.",
+  title: "Mizan Track • Habits & Expense Tracker",
+  description: "Consistency and finance tracker for daily habits and expenses.",
 };
 
 export default function RootLayout({
@@ -29,13 +20,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} font-sans antialiased`}
-      >
-        <Providers>
-           {children}
-        </Providers>
+    <html lang="en" className={inter.variable}>
+      <body className="font-sans antialiased">
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

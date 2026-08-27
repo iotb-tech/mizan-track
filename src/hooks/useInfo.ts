@@ -12,11 +12,27 @@ export const getInfo = async (): Promise<UserData> => {
 
   const { id: user_id, user_metadata, email } = user;
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name, role, is_disabled, avatar_url")
-    .eq("id", user_id)
-    .single();
+  let profile = null;
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("full_name, role, is_disabled, avatar_url")
+      .eq("id", user_id)
+      .maybeSingle();
+
+    if (!error && data) {
+      profile = data;
+    } else {
+      const fallback = await supabase
+        .from("profiles")
+        .select("full_name, role, is_disabled")
+        .eq("id", user_id)
+        .maybeSingle();
+      profile = fallback.data ? { ...fallback.data, avatar_url: null } : null;
+    }
+  } catch {
+    profile = null;
+  }
 
   const userName =
     profile?.full_name || user_metadata?.name || email?.split("@")[0] || "User";
