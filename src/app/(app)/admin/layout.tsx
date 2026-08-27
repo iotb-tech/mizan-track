@@ -72,8 +72,10 @@ export default function AdminLayout({
           {/* Admin Navigation Bar */}
           <div className="flex flex-col gap-4 rounded-2xl border border-amber-200/80 bg-amber-50/50 p-4 shadow-sm dark:border-amber-900/40 dark:bg-amber-950/20 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500 text-lg text-white shadow-sm">
-                🛡️
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500 text-white shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                </svg>
               </span>
               <div>
                 <h1 className="text-base font-bold text-gray-900 dark:text-white">
@@ -95,7 +97,7 @@ export default function AdminLayout({
                     : "bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                 }`}
               >
-                👥 User Directory
+                User Directory
               </Link>
 
               <Link
@@ -106,7 +108,7 @@ export default function AdminLayout({
                     : "bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                 }`}
               >
-                🔐 Admin Password & Security
+                Admin Password & Security
               </Link>
 
               <button
@@ -115,7 +117,7 @@ export default function AdminLayout({
                 className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-600 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                 title="Lock admin session and return to dashboard"
               >
-                🚪 Exit Admin
+                Exit Admin
               </button>
             </div>
           </div>
