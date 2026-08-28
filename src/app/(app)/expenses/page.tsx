@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useExpenses } from "@/hooks/useExpenses";
 import { useDeleteExpense } from "@/hooks/useDeleteExpense";
+import { Expense } from "@/types/database";
 import { useData } from "@/lib/UserDataContext";
 import { ModalDialog } from "@/component/ModalDialog";
 import { ExpenseForm } from "@/component/ExpenseForm";
@@ -18,6 +19,8 @@ export default function ExpensesPage() {
   } = useExpenses(user_id);
 
   const deleteExpenseMutation = useDeleteExpense(user_id);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -42,7 +45,7 @@ export default function ExpensesPage() {
           onClick={() => setIsModalOpen(true)}
           className="inline-flex items-center justify-center rounded-lg bg-[#1976e8] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1267cf]"
         >
-          + Add Expense
+          + Add Expenses
         </button>
       </div>
 
@@ -123,6 +126,16 @@ export default function ExpensesPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedExpense(expense);
+                        setIsEditModalOpen(true);
+                      }}
+                      className="mr-4 text-sm font-medium text-[#1976e8] hover:text-[#1267cf]"
+                    >
+                      Edit
+                    </button>
+                    <button
                         type="button"
                         onClick={() => {
                           setSelectedExpenseId(expense.id);
@@ -164,6 +177,32 @@ export default function ExpensesPage() {
           </p>
 
           <ExpenseForm setIsOpen={setIsModalOpen} />
+        </div>
+      </ModalDialog>
+
+      <ModalDialog
+        isOpen={isEditModalOpen}
+        setIsOpen={setIsEditModalOpen}
+        dismiss={true}
+      >
+        <div className="flex flex-col">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            Edit expense
+          </h2>
+
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+            Update the saved details for this expense.
+          </p>
+
+          {selectedExpense && (
+            <ExpenseForm
+              expense={selectedExpense}
+              setIsOpen={(isOpen) => {
+                setIsEditModalOpen(isOpen);
+                if (!isOpen) setSelectedExpense(null);
+              }}
+            />
+          )}
         </div>
       </ModalDialog>
 

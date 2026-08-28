@@ -96,3 +96,26 @@ export async function deleteExpense(
     .eq("user_id", userId);
   if (error) throw new Error(error.message);
 }
+
+export async function updateExpense(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+  expenseId: string,
+  input: CreateExpenseInput,
+): Promise<Expense> {
+  const { data, error } = await supabase
+    .from("expenses")
+    .update({
+      amount: input.amount,
+      category: input.category,
+      date: input.date,
+      note: input.note || null,
+    })
+    .eq("id", expenseId)
+    .eq("user_id", userId)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}

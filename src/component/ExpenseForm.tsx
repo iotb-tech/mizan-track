@@ -9,7 +9,10 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCreateExpense } from "@/hooks/useCreateExpense";
+import { useUpdateExpense } from "@/hooks/useUpdateExpense";
 import { useData } from "@/lib/UserDataContext";
+import { Expense } from "@/types/database";
+import { useEffect } from "react";
 
 const expenseCategories = [
   "Food",
@@ -24,8 +27,10 @@ const expenseCategories = [
 
 export function ExpenseForm({
   setIsOpen,
+  expense,
 }: {
   setIsOpen: (val: boolean) => void;
+  expense?: Expense;
 }) {
   const { user_id } = useData();
 
@@ -42,18 +47,32 @@ export function ExpenseForm({
   >({
     resolver: zodResolver(createExpenseSchema),
     defaultValues: {
-      amount: undefined,
-      category: "Food",
-      date: new Date().toISOString().split("T")[0],
-      note: "",
+      amount: expense?.amount,
+      category: expense?.category || "Food",
+      date: expense?.date || new Date().toISOString().split("T")[0],
+      note: expense?.note || "",
     },
   });
 
   const createExpense = useCreateExpense(user_id);
+  const updateExpense = useUpdateExpense(user_id);
+
+  useEffect(() => {
+    reset({
+      amount: expense?.amount,
+      category: expense?.category || "Food",
+      date: expense?.date || new Date().toISOString().split("T")[0],
+      note: expense?.note || "",
+    });
+  }, [expense, reset]);
 
   async function onSubmit(value: CreateExpenseInput) {
     try {
-      await createExpense.mutateAsync(value);
+      if (expense) {
+        await updateExpense.mutateAsync({ expenseId: expense.id, input: value });
+      } else {
+        await createExpense.mutateAsync(value);
+      }
       reset();
       setIsOpen(false);
     } catch (error) {
@@ -61,7 +80,7 @@ export function ExpenseForm({
         message:
           error instanceof Error
             ? error.message
-            : "Could not save the expense",
+            : `Could not ${expense ? "update" : "save"} the expense`,
       });
     }
   }
@@ -154,7 +173,13 @@ export function ExpenseForm({
           disabled={isSubmitting}
           className="rounded-lg bg-[#1976e8] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#1267cf] disabled:opacity-50"
         >
-          {isSubmitting ? "Adding..." : "Add Expense"}
+          {isSubmitting
+            ? expense
+              ? "Saving..."
+              : "Adding..."
+            : expense
+              ? "Save Changes"
+              : "Add Expense"}
         </button>
       </div>
     </form>
