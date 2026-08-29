@@ -14,7 +14,6 @@ import {
 import { useExpenses } from "@/hooks/useExpenses";
 import { useData } from "@/lib/UserDataContext";
 import { useEffect, useMemo } from "react";
-import { Expense } from "@/types/database";
 
 Chart.register(
   ArcElement,
@@ -128,27 +127,16 @@ export function generateColor(value: number): string[] {
   });
 }
 
-function getMonthExpenses(expenses: Expense[]) {
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
-
-  return expenses.filter((expense) => {
-    const expenseDate = new Date(expense.date);
-
-    return (
-      expenseDate.getMonth() === currentMonth &&
-      expenseDate.getFullYear() === currentYear
-    );
-  });
-}
-
 export function Chartdata({
   setAverageExpense,
   setTotal,
+  rangeFilter = "this_month",
+  dateRange,
 }: {
   setAverageExpense?: (value: number) => void;
   setTotal?: (value: number) => void;
+  rangeFilter?: "this_week" | "last_week" | "this_month" | "date_range";
+  dateRange?: DateRangeSelection;
 }) {
   const { user_id } = useData();
 
@@ -158,14 +146,26 @@ export function Chartdata({
     error,
   } = useExpenses(user_id);
 
-  const filteredExpenses = getMonthExpenses(expenses);
+  const range = useMemo(
+    () => getRangeDates(rangeFilter, dateRange),
+    [dateRange, rangeFilter],
+  );
+
+  const filteredExpenses = useMemo(() => {
+    const { start, end } = range;
+
+    return expenses.filter((expense) => {
+      const expenseDate = new Date(`${expense.date}T00:00:00`);
+      return expenseDate >= start && expenseDate <= end;
+    });
+  }, [expenses, range]);
 
   const grouped = useMemo(() => {
     const result: Record<string, number> = {};
 
     for (const expense of filteredExpenses) {
       result[expense.category] =
-        (result[expense.category] ?? 0) + expense.amount;
+        (result[expense.category] ?? 0) + Number(expense.amount || 0);
     }
 
     return result;
@@ -204,15 +204,25 @@ export function Chartdata({
     [labels, values],
   );
 
+  const chartTitle =
+    rangeFilter === "this_week"
+      ? "Expenses by Category - This Week"
+      : rangeFilter === "last_week"
+        ? "Expenses by Category - Last Week"
+        : rangeFilter === "this_month"
+          ? "Expenses by Category - This Month"
+          : "Expenses by Category - Date Range";
+
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top",
       },
       title: {
         display: true,
-        text: "Expenses by Category",
+        text: chartTitle,
       },
     },
   } as const;
@@ -240,7 +250,7 @@ export function Chartdata({
     return (
       <div className="p-12 text-center">
         <h3 className="text-lg font-semibold text-gray-500">
-          No expenses recorded this month
+          No expenses recorded for this period
         </h3>
       </div>
     );

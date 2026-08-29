@@ -24,6 +24,9 @@ export default function Dashboard({ children }: { children: ReactNode }) {
 
   const [, setChartTotal] = useState(0);
   const [chartFilter, setChartFilter] = useState("this_week");
+  const [categoryChartFilter, setCategoryChartFilter] = useState<
+    "this_week" | "last_week" | "this_month" | "date_range"
+  >("this_month");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDateRangeModalOpen, setIsDateRangeModalOpen] = useState(false);
 
@@ -40,6 +43,16 @@ export default function Dashboard({ children }: { children: ReactNode }) {
 
   const handleChartFilterChange = (value: string) => {
     setChartFilter(value);
+
+    if (value === "date_range") {
+      setIsDateRangeModalOpen(true);
+    }
+  };
+
+  const handleCategoryChartFilterChange = (
+    value: "this_week" | "last_week" | "this_month" | "date_range",
+  ) => {
+    setCategoryChartFilter(value);
 
     if (value === "date_range") {
       setIsDateRangeModalOpen(true);
@@ -211,9 +224,9 @@ export default function Dashboard({ children }: { children: ReactNode }) {
               </div>
             ) : null}
           </div>
-         </section>
+        </section>
 
-         <ModalDialog
+        <ModalDialog
           isOpen={isDateRangeModalOpen}
           setIsOpen={setIsDateRangeModalOpen}
          >
@@ -395,7 +408,40 @@ export default function Dashboard({ children }: { children: ReactNode }) {
 
           {/* Category Overview */}
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-900">
-            <Chartdata setTotal={setChartTotal} />
+            <div className="mb-5 flex items-center justify-between gap-3">
+              <h2 className="font-semibold text-gray-900 dark:text-white">
+                Expenses by Category
+              </h2>
+
+              <Select
+                className="rounded-md border border-gray-200 bg-white px-2 py-1 text-sm text-gray-600 outline-none transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                value={categoryChartFilter}
+                onChange={(e) =>
+                  handleCategoryChartFilterChange(
+                    e.target.value as
+                      | "this_week"
+                      | "last_week"
+                      | "this_month"
+                      | "date_range",
+                  )
+                }
+              >
+                <option value="this_week">This Week</option>
+                <option value="last_week">Last Week</option>
+                <option value="this_month">This Month</option>
+                <option value="date_range">Date Range</option>
+              </Select>
+            </div>
+
+            <div className="mx-auto h-[320px] w-full max-w-[420px]">
+              <Chartdata
+                setTotal={setChartTotal}
+                rangeFilter={categoryChartFilter}
+                dateRange={
+                  categoryChartFilter === "date_range" ? dateRange : undefined
+                }
+              />
+            </div>
           </div>
         </section>
 
