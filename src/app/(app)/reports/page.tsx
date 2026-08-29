@@ -5,7 +5,11 @@ import { useHabits } from "@/hooks/useHabits";
 import { useExpenses } from "@/hooks/useExpenses";
 import { Select } from "@/component";
 import { useMemo, useState } from "react";
-import { BarChart, Chartdata } from "./charts";
+import {
+  BarChart,
+  Chartdata,
+  DateRangeSelection,
+} from "./charts";
 
 export default function Page() {
   const { user_id } = useData();
@@ -13,6 +17,10 @@ export default function Page() {
   const [isLastWeek, setIsLastWeek] = useState("this_week");
   const [averageExpense, setAverageExpense] = useState(0);
   const [totalSpending, setTotalSpending] = useState(0);
+  const [dateRange, setDateRange] = useState<DateRangeSelection>({
+    from: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-01`,
+    to: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`,
+  });
 
   const { data: habits = [] } = useHabits(user_id);
 
@@ -101,11 +109,44 @@ export default function Page() {
                 >
                   <option value="this_week">This week</option>
                   <option value="last_week">Last week</option>
+                  <option value="this_month">This month</option>
+                  <option value="date_range">Date range</option>
                 </Select>
               </div>
 
+              {isLastWeek === "date_range" ? (
+                <div className="mb-4 grid gap-3 sm:grid-cols-2">
+                  <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
+                    From
+                    <input
+                      type="date"
+                      value={dateRange.from}
+                      onChange={(e) =>
+                        setDateRange((prev) => ({ ...prev, from: e.target.value }))
+                      }
+                      className="rounded-lg border border-neutral-200 px-3 py-2 text-gray-900 outline-none"
+                    />
+                  </label>
+
+                  <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
+                    To
+                    <input
+                      type="date"
+                      value={dateRange.to}
+                      onChange={(e) =>
+                        setDateRange((prev) => ({ ...prev, to: e.target.value }))
+                      }
+                      className="rounded-lg border border-neutral-200 px-3 py-2 text-gray-900 outline-none"
+                    />
+                  </label>
+                </div>
+              ) : null}
+
               <div className="mx-auto w-[90%]">
-                <BarChart isLastWeek={isLastWeek} />
+                <BarChart
+                  isLastWeek={isLastWeek}
+                  dateRange={isLastWeek === "date_range" ? dateRange : undefined}
+                />
               </div>
             </div>
 

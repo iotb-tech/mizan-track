@@ -36,6 +36,89 @@ export const weekdays = [
   "Sat",
 ];
 
+export type DateRangeSelection = {
+  from: string;
+  to: string;
+};
+
+function parseLocalDate(value: string): Date {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function toDateInputValue(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function formatShortDate(date: Date): string {
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function getRangeDates(isLastWeek: string, dateRange?: DateRangeSelection) {
+  const now = new Date();
+  const today = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  );
+
+  if (isLastWeek === "this_week") {
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+
+    return {
+      start: new Date(startOfWeek),
+      end: new Date(startOfWeek.getFullYear(), startOfWeek.getMonth(), startOfWeek.getDate() + 6),
+    };
+  }
+
+  if (isLastWeek === "last_week") {
+    const startOfCurrentWeek = new Date(today);
+    startOfCurrentWeek.setDate(today.getDate() - today.getDay());
+
+    const startOfLastWeek = new Date(startOfCurrentWeek);
+    startOfLastWeek.setDate(startOfCurrentWeek.getDate() - 7);
+
+    return {
+      start: new Date(startOfLastWeek),
+      end: new Date(startOfLastWeek.getFullYear(), startOfLastWeek.getMonth(), startOfLastWeek.getDate() + 6),
+    };
+  }
+
+  if (isLastWeek === "this_month") {
+    return {
+      start: new Date(now.getFullYear(), now.getMonth(), 1),
+      end: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+    };
+  }
+
+  if (isLastWeek === "date_range") {
+    if (!dateRange?.from || !dateRange?.to) {
+      return { start: today, end: today };
+    }
+
+    const fromDate = parseLocalDate(dateRange.from);
+    const toDate = parseLocalDate(dateRange.to);
+
+    const rangeStart = fromDate <= toDate ? fromDate : toDate;
+    const rangeEnd = fromDate <= toDate ? toDate : fromDate;
+
+    return {
+      start: new Date(rangeStart.getFullYear(), rangeStart.getMonth(), rangeStart.getDate()),
+      end: new Date(rangeEnd.getFullYear(), rangeEnd.getMonth(), rangeEnd.getDate()),
+    };
+  }
+
+  return { start: today, end: today };
+}
+
 export function generateColor(value: number): string[] {
   if (value === 0) return [];
 
@@ -168,8 +251,10 @@ export function Chartdata({
 
 export function BarChart({
   isLastWeek,
+  dateRange,
 }: {
   isLastWeek: string;
+  dateRange?: DateRangeSelection;
 }) {
   const { user_id } = useData();
 
@@ -179,65 +264,114 @@ export function BarChart({
     error,
   } = useExpenses(user_id);
 
-  const weekData = useMemo(() => {
-    const now = new Date();
+  const range = useMemo(
+    () => getRangeDates(isLastWeek, dateRange),
+    [dateRange, isLastWeek],
+  );
 
-    const startOfToday = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    );
+  const { start, end } = range;
 
+  const chartData = useMemo(() => {
     const selectedExpenses = expenses.filter((expense) => {
-      const expenseDate = new Date(expense.date);
-
-      const expenseDay = new Date(
-        expenseDate.getFullYear(),
-        expenseDate.getMonth(),
-        expenseDate.getDate(),
-      );
-
-      const difference =
-        Math.floor(
-          (startOfToday.getTime() - expenseDay.getTime()) / 86400000,
-        );
-
-      if (isLastWeek === "this_week") {
-        return difference >= 0 && difference <= 6;
-      }
-
-      return difference >= 7 && difference <= 13;
+      const expenseDate = new Date(`${expense.date}T00:00:00`);
+      return expenseDate >= start && expenseDate <= end;
     });
 
     const grouped: Record<string, number> = {};
 
     for (const expense of selectedExpenses) {
-      const day = new Date(expense.date).toLocaleDateString("en-US", {
-        weekday: "short",
-      });
+      const expenseDate = new Date(`${expense.date}T00:00:00`);
 
-      grouped[day] = (grouped[day] ?? 0) + expense.amount;
+      let key = "";
+
+      if (isLastWeek === "this_week" || isLastWeek === "last_week") {
+        key = expenseDate.toLocaleDateString("en-US", { weekday: "short" });
+      } else if (isLastWeek === "this_month") {
+        key = String(expenseDate.getDate());
+      } else if (isLastWeek === "date_range") {
+        const year = expenseDate.getFullYear();
+        const month = String(expenseDate.getMonth() + 1).padStart(2, "0");
+        const day = String(expenseDate.getDate()).padStart(2, "0");
+        key = `${year}-${month}-${day}`;
+      }
+
+      grouped[key] = (grouped[key] ?? 0) + Number(expense.amount || 0);
     }
 
-    return weekdays.map((day) => grouped[day] ?? 0);
-  }, [expenses, isLastWeek]);
+    if (isLastWeek === "this_week" || isLastWeek === "last_week") {
+      return {
+        labels: weekdays,
+        values: weekdays.map((day) => grouped[day] ?? 0),
+        title:
+          isLastWeek === "this_week"
+            ? "Spending This Week"
+            : "Spending Last Week",
+        label:
+          isLastWeek === "this_week" ? "This week" : "Last week",
+      };
+    }
+
+    if (isLastWeek === "this_month") {
+      const daysInMonth = new Date(
+        start.getFullYear(),
+        start.getMonth() + 1,
+        0,
+      ).getDate();
+
+      const labels = Array.from({ length: daysInMonth }, (_, index) =>
+        String(index + 1),
+      );
+
+      return {
+        labels,
+        values: labels.map((day) => grouped[day] ?? 0),
+        title: "Spending This Month",
+        label: "This month",
+      };
+    }
+
+    if (isLastWeek === "date_range") {
+      const labels: string[] = [];
+      const values: number[] = [];
+      const currentDate = new Date(start);
+
+      while (currentDate <= end) {
+        const key = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
+        labels.push(formatShortDate(currentDate));
+        values.push(grouped[key] ?? 0);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      return {
+        labels,
+        values,
+        title:
+          `Spending ${toDateInputValue(start)} to ${toDateInputValue(end)}`,
+        label: "Selected range",
+      };
+    }
+
+    return {
+      labels: weekdays,
+      values: weekdays.map((day) => grouped[day] ?? 0),
+      title: "Spending Overview",
+      label: "Spending",
+    };
+  }, [end, expenses, isLastWeek, start]);
 
   const data = useMemo(
     () => ({
-      labels: weekdays,
+      labels: chartData.labels,
       datasets: [
         {
-          label:
-            isLastWeek === "this_week"
-              ? "This week"
-              : "Last week",
-          data: weekData,
-          backgroundColor: generateColor(weekdays.length),
+          label: chartData.label,
+          data: chartData.values,
+          backgroundColor: generateColor(chartData.labels.length || 1),
           borderWidth: 1,
         },
       ],
     }),
-    [weekData, isLastWeek],
+    [chartData],
   );
 
   const options = {
@@ -248,10 +382,7 @@ export function BarChart({
       },
       title: {
         display: true,
-        text:
-          isLastWeek === "this_week"
-            ? "Spending This Week"
-            : "Spending Last Week",
+        text: chartData.title,
       },
     },
   } as const;
@@ -275,11 +406,11 @@ export function BarChart({
     );
   }
 
-  if (expenses.length === 0) {
+  if (expenses.length === 0 || chartData.values.every((value) => value === 0)) {
     return (
       <div className="p-12 text-center">
         <h3 className="text-lg font-semibold text-gray-500">
-          No expenses recorded yet
+          No expenses recorded for this period
         </h3>
       </div>
     );

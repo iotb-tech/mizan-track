@@ -3,7 +3,11 @@
 import { ReactNode, useState, useMemo } from "react";
 import { useData } from "@/lib/UserDataContext";
 import { useHabits } from "@/hooks/useHabits";
-import { BarChart, Chartdata } from "@/app/(app)/reports/charts";
+import {
+  BarChart,
+  Chartdata,
+  DateRangeSelection,
+} from "@/app/(app)/reports/charts";
 import { Select } from "..";
 import Link from "next/link";
 import { useExpenses } from "@/hooks/useExpenses";
@@ -19,8 +23,28 @@ export default function Dashboard({ children }: { children: ReactNode }) {
   const { data: expenses = [], isLoading, error } = useExpenses(user_id);
 
   const [, setChartTotal] = useState(0);
-  const [islastWeek, setislastWeek] = useState("this_week");
+  const [chartFilter, setChartFilter] = useState("this_week");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDateRangeModalOpen, setIsDateRangeModalOpen] = useState(false);
+
+  const defaultDateRange = useMemo<DateRangeSelection>(() => {
+    const now = new Date();
+
+    return {
+      from: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`,
+      to: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`,
+    };
+  }, []);
+
+  const [dateRange, setDateRange] = useState<DateRangeSelection>(defaultDateRange);
+
+  const handleChartFilterChange = (value: string) => {
+    setChartFilter(value);
+
+    if (value === "date_range") {
+      setIsDateRangeModalOpen(true);
+    }
+  };
 
   // This week's spending
   const thisWeekSpent = useMemo(() => {
@@ -166,24 +190,111 @@ export default function Dashboard({ children }: { children: ReactNode }) {
 
               <Select
                 className="rounded-md border border-gray-200 bg-white px-2 py-1 text-sm text-gray-600 outline-none transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
-                onChange={(e) => setislastWeek(e.target.value)}
+                value={chartFilter}
+                onChange={(e) => handleChartFilterChange(e.target.value)}
               >
                 <option value="this_week">This Week</option>
                 <option value="last_week">Last Week</option>
+                <option value="this_month">This Month</option>
+                <option value="date_range">Date Range</option>
               </Select>
             </div>
+ 
+            <BarChart
+              isLastWeek={chartFilter}
+              dateRange={chartFilter === "date_range" ? dateRange : undefined}
+            />
 
-            <BarChart isLastWeek={islastWeek} />
-
-            {expenses.length === 0 ? (
-              ""
-            ) : (
+            {chartFilter === "this_week" && expenses.length > 0 ? (
               <div className="mt-5 rounded-lg bg-blue-50 px-4 py-3 text-sm text-gray-600 transition-colors dark:bg-blue-950/40 dark:text-gray-300">
                 You spent <strong>₦{thisWeekSpent.toLocaleString()}</strong> this week.
               </div>
-            )}
+            ) : null}
           </div>
-        </section>
+         </section>
+
+         <ModalDialog
+          isOpen={isDateRangeModalOpen}
+          setIsOpen={setIsDateRangeModalOpen}
+         >
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Select a date range
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsDateRangeModalOpen(false)}
+                className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                aria-label="Close date range picker"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="flex flex-col gap-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                From
+                <input
+                  type="date"
+                  value={dateRange.from}
+                  onChange={(e) =>
+                    setDateRange((prev) => ({ ...prev, from: e.target.value }))
+                  }
+                  className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 outline-none focus:border-[#1976e8] dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                />
+              </label>
+
+              <label className="flex flex-col gap-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                To
+                <input
+                  type="date"
+                  value={dateRange.to}
+                  onChange={(e) =>
+                    setDateRange((prev) => ({ ...prev, to: e.target.value }))
+                  }
+                  className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 outline-none focus:border-[#1976e8] dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                />
+              </label>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsDateRangeModalOpen(false)}
+                className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (!dateRange.from || !dateRange.to) {
+                    return;
+                  }
+
+                  const [from, to] = [
+                    new Date(`${dateRange.from}T00:00:00`),
+                    new Date(`${dateRange.to}T00:00:00`),
+                  ];
+
+                  if (from > to) {
+                    setDateRange({
+                      from: dateRange.to,
+                      to: dateRange.from,
+                    });
+                  }
+
+                  setIsDateRangeModalOpen(false);
+                }}
+                className="rounded-lg bg-[#1976e8] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#1267cf]"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+         </ModalDialog>
 
         {/* Recent expenses */}
         <section className="grid gap-6 xl:grid-cols-2">
